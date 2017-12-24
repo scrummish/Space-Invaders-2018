@@ -25,7 +25,9 @@ let $canvas;
 let canvasContext;
 let enemyFleet;
 let player;
-let testing = 0;
+let shipRow = 50; // Starting point of enemy ships
+let shipSpeed = 1; // Enemy ship speed
+let framesPerSecond = 60;
 
 // Class for the ship
 class Ship {
@@ -49,31 +51,37 @@ class Ship {
 // Class that creates an entire fleet of ships
 class Fleet {
 	constructor(){
-		this.availableShips = [];
+		// this.availableShips = []; // currently not using this with canvas
+	}
+	drawShip(newRow){
+		canvasContext.fillStyle = "#1B94FB";
+		canvasContext.fillRect(shipRow+newRow,5,15,9);
+		canvasContext.fillStyle = "#1ddacf";
+		canvasContext.fillRect(shipRow+newRow,17,15,9);
+		canvasContext.fillStyle = "#AA56FF";
+		canvasContext.fillRect(shipRow+newRow,29,15,9);
 	}
 	createShips(){ // a. creates 24 enemy ships and b. stores them in order to manipulate them as neccessary (kill etc)
-		let x = 0;
-		for (var i = 0; i < 11; i++) { // NOTE! Start with one when you test it
-			let enemySpawn = new Ship(this.availableShips.length, 1); // a.
-			this.availableShips.push(enemySpawn); // b.
-
-			canvasContext.fillStyle = "#1B94FB";
-			canvasContext.fillRect(x+testing,5,15,9);
-			canvasContext.fillStyle = "#1ddacf";
-			canvasContext.fillRect(x+testing,17,15,9);
-			canvasContext.fillStyle = "#AA56FF";
-			canvasContext.fillRect(x+testing,29,15,9);
-			x+=18;
-
-
+		
+		// for (var i = 0; i < 12; i++) { // NOTE! Start with one when you test it
+			// let enemySpawn = new Ship(this.availableShips.length, 1); // a.
+			// this.availableShips.push(enemySpawn); // b.
 			// let $currentCell = $("<div>").addClass("cell"); // Creates a cell for the ship
 			// $("#ship-container").append($currentCell); // Appends the new cell
 			// let $ship = $("<img>").attr("src", "imgs/ship.png").attr("id", enemySpawn.Id); // Adds the ship image
 			// $currentCell.append($ship); // Appends the ship image to the cell
+		// }
+
+		shipRow+=shipSpeed;
+		for (var i = 0; i <= 162; i+=18) {
+			this.drawShip(i); 
 		}
-		console.log(testing);
-		testing+=1
-		console.log(testing);
+		if (shipRow < 0){ // This is the perimeter 
+			shipSpeed = -shipSpeed; // Makes it bounce off the left side
+		}
+		if((shipRow + 680) > 800){ // This is the perimeter 
+			shipSpeed = -shipSpeed; // Makes it bounce off the right side
+		}
 	}
 }
 
@@ -107,10 +115,9 @@ let game = {
 		// $("#screen").append($player); // Appends the players ship image to the 
 	},
 	startGame: function(){ // Starts the game
-		setInterval(()=>{ // Animates the enemy ships at 5 frames per second
+		setInterval(()=>{ // Animates the enemy ships at 60 frames per second
 			this.createCanvas();
-			console.log("testing");
-		},1000/60)
+		},1000/framesPerSecond) 
 		
 	},
 	createCanvas: function(){ 
@@ -125,7 +132,7 @@ let game = {
 		this.createContext(); // Starts the proces of creating the rest of the game's elements
 	},
 	createContext: function(){ // Creates the enemy fleet and player ship
-		// this.createFleet(); // The global variable enemyFleet will be your fleet 
+		this.createFleet(); // The global variable enemyFleet will be your fleet 
 		this.createPlayer(); // The global variable player will be your players ship
 	}
 }
