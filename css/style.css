@@ -1,0 +1,28 @@
+body{
+	margin: 0;
+	background-color: #09152A;
+}
+#canvas{
+	width: 800;
+	height: 650;
+	padding: 0;
+    margin: auto;
+    display: block;
+    box-shadow: 1px 5px 20px #1ddacf;
+}
+
+/*.cell{ 
+	height: 50px;
+	width: 50px;
+	margin: 5px;
+	display: inline-block;
+}*/
+
+/*#ship-container{
+	width: 600px;
+}*/
+
+/*#player-ship{
+	bottom: 30;
+    position: absolute;
+}*/
