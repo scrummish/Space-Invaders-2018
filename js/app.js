@@ -20,14 +20,18 @@ $(document).ready(function() {
 	game.startGame();
 });
 
+// let $panImage = $("<img>").attr("src", "imgs/800x600.png").attr("id","space-img");
+// $("body").append($panImage); // used to play around with adding a background image
+
+
 // Global Variables
-let $canvas;
-let canvasContext;
+let ctx;
 let enemyFleet;
 let player;
 let shipRow = 50; // Starting point of enemy ships
 let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
+let playerCoordinateX = 138;
 
 // Class for the ship
 class Ship {
@@ -54,12 +58,12 @@ class Fleet {
 		// this.availableShips = []; // currently not using this with canvas
 	}
 	drawShip(newRow){
-		canvasContext.fillStyle = "#1B94FB";
-		canvasContext.fillRect(shipRow+newRow,5,15,9);
-		canvasContext.fillStyle = "#1ddacf";
-		canvasContext.fillRect(shipRow+newRow,17,15,9);
-		canvasContext.fillStyle = "#AA56FF";
-		canvasContext.fillRect(shipRow+newRow,29,15,9);
+		ctx.fillStyle = "#1B94FB";
+		ctx.fillRect(shipRow+newRow,5,15,9);
+		ctx.fillStyle = "#1ddacf";
+		ctx.fillRect(shipRow+newRow,17,15,9);
+		ctx.fillStyle = "#AA56FF";
+		ctx.fillRect(shipRow+newRow,29,15,9);
 	}
 	createShips(){ // a. creates 24 enemy ships and b. stores them in order to manipulate them as neccessary (kill etc)
 		
@@ -85,19 +89,22 @@ class Fleet {
 	}
 }
 
-// Class inheritance for the players ship 
-class Player { 
-	constructor(){ // fix this use super and extend the class!!!
-		// super(health);
-		this.Id = "player-ship";
-		this.health = 1;
+class Player {
+	drawPlayer(){
+		ctx.fillStyle = "yellow";
+		ctx.fillRect(playerCoordinateX,130,20,12);
 	}
-	movement(){ // Provide functionality for player to move back and forth using directionals
-		
-		console.log("test player movement function");
+	moveright(){
+		console.log(playerCoordinateX + " right test");
+		if(playerCoordinateX <= 268){
+			playerCoordinateX += 10;
+		}	
 	}
-	shoot(){ // holding spacebar shoots 5 bullets per second
-		console.log("shoot");
+	moveleft(){
+		console.log(playerCoordinateX + " left test");
+		if(playerCoordinateX >= 8 ){
+			playerCoordinateX -= 10;
+		}
 	}
 }
 
@@ -108,11 +115,8 @@ let game = {
 		enemyFleet.createShips();
 	},
 	createPlayer: function(){ // Creates a new player ship
-		player = new Player();
-		canvasContext.fillStyle = "yellow";
-		canvasContext.fillRect(0,134,20,12);
-		// let $player = $("<img>").attr("src", "imgs/player.png").attr("id", player.Id); // Adds the ship image & ID
-		// $("#screen").append($player); // Appends the players ship image to the 
+		player = new Player(); 
+		player.drawPlayer();
 	},
 	startGame: function(){ // Starts the game
 		setInterval(()=>{ // Animates the enemy ships at 60 frames per second
@@ -121,14 +125,9 @@ let game = {
 		
 	},
 	createCanvas: function(){ 
-		$canvas = $("#canvas"); // The global variable representing the gameboard where you will draw your game onto
-		canvasContext = canvas.getContext("2d"); // Global variable to draw the game with
-		
-		// Draws the background of the game
-		canvasContext.fillStyle = "black"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
-		// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect
-		canvasContext.fillRect(0,0,canvas.width,canvas.height); //https://www.w3schools.com/tags/canvas_fillrect.asp
-		
+		ctx = canvas.getContext("2d"); // Global variable to draw the game with
+		ctx.fillStyle = "black"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
+		ctx.fillRect(0,0,canvas.width,canvas.height); //https://www.w3schools.com/tags/canvas_fillrect.asp
 		this.createContext(); // Starts the proces of creating the rest of the game's elements
 	},
 	createContext: function(){ // Creates the enemy fleet and player ship
@@ -136,15 +135,12 @@ let game = {
 		this.createPlayer(); // The global variable player will be your players ship
 	}
 }
-// $("body").on("keydown",function(e) {
-//   if(e.keyCode == 37) { // left
-//     $("#player-ship").stop().animate({
-//       left: "-=150"
-//     }, 100);
-//   }
-//   else if(e.keyCode == 39) { // right
-//     $("#player-ship").stop().animate({
-//       left: "+=150"
-//     }, 100);
-//   }
-// });
+
+$("body").on("keydown",function(e) {
+  if(e.keyCode == 37) { // left
+    player.moveleft();
+  }
+  else if(e.keyCode == 39) { // right
+    player.moveright();
+  }
+});
