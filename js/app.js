@@ -133,7 +133,10 @@ $("body").on("keydown",function(e) {
   	else if(e.keyCode == 39) { // right
     	player.moveright();
   	} else if(e.keyCode == 32){
-  		player.shoot(bullet);
-  		bulletY-=10;
+  		var stopInt = setInterval(()=>{
+  			player.shoot(bullet);
+  			bulletY-=1;
+  		},2);
+  		// clearInterval(stopInt);
   	}
 })
