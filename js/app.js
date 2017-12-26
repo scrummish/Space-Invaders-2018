@@ -15,14 +15,12 @@
 // Boss ship has random reloads that last 5 seconds 
 // Objective: Survive the most rounds
 
+// Randomly add a cromulon head in the background
+
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
 	game.startGame();
 });
-
-// let $panImage = $("<img>").attr("src", "imgs/800x600.png").attr("id","space-img");
-// $("body").append($panImage); // used to play around with adding a background image
-
 
 // Global Variables
 let $ctx = $("#canvas")[0].getContext("2d");
@@ -32,6 +30,8 @@ let shipRow = 50; // Starting point of enemy ships
 let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
 let playerCoordinateX = 0;
+let bullet;
+let bulletY = 118; // y axis for bullet starting point
 
 // Class for the ship
 class Ship {
@@ -39,9 +39,6 @@ class Ship {
 		this.health = health; 
 		this.Id = ID;
 		this.alive = true; // Might not need this. Call destroy function when enemy ship is shot
-	}
-	shoot(){ // add firepower property that shoots 2 rounds per second
-		console.log("shoot");
 	}
 	destroyMe(){
 		// Removes ship from the window, but cell remains in order to keep every ship in position
@@ -65,9 +62,9 @@ class Fleet {
 		$ctx.fillStyle = "#AA56FF";
 		$ctx.fillRect(shipRow+newRow,29,15,9);
 	}
-	createShips(){ // a. creates 24 enemy ships and b. stores them in order to manipulate them as neccessary (kill etc)
-		shipRow+=shipSpeed;
-		for (var i = 0; i <= 162; i+=18) {
+	createShips(){ // a. 
+		shipRow += shipSpeed;
+		for (var i = 0; i <= 162; i+=18) { // creates 30 enemy ships 18px apart from the previous
 			this.drawShip(i); 
 		}
 		if (shipRow < 0){ // This is the perimeter 
@@ -82,18 +79,21 @@ class Fleet {
 class Player {
 	drawPlayer(ship){
 		$ctx.drawImage(ship, playerCoordinateX,130,20,12);
+		bullet = new Image(); 
+		bullet.src = "imgs/bullet.png";
 	}
 	moveright(){
-		console.log(playerCoordinateX + " right test");
 		if(playerCoordinateX <= 273){
 			playerCoordinateX += 13;
 		} 	
 	}
 	moveleft(){
-		console.log(playerCoordinateX + " left test");
 		if(playerCoordinateX >= 4 ){
 			playerCoordinateX -= 13;
 		}
+	}
+	shoot(fire){ // add firepower property that shoots 2 rounds per second
+		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
 	}
 }
 
@@ -116,7 +116,6 @@ let game = {
 		},1000/framesPerSecond) 		
 	},
 	createCanvas: function(){ 
-		console.log($ctx);
 		$ctx.fillStyle = "black"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
 		$ctx.fillRect(0,0,canvas.width,canvas.height); //https://www.w3schools.com/tags/canvas_fillrect.asp
 		this.createContext(); // Starts the proces of creating the rest of the game's elements
@@ -128,10 +127,13 @@ let game = {
 }
 
 $("body").on("keydown",function(e) {
-  if(e.keyCode == 37) { // left
-    player.moveleft();
-  }
-  else if(e.keyCode == 39) { // right
-    player.moveright();
-  }
-});
+	if(e.keyCode == 37) { // left
+		player.moveleft();
+  	}
+  	else if(e.keyCode == 39) { // right
+    	player.moveright();
+  	} else if(e.keyCode == 32){
+  		player.shoot(bullet);
+  		bulletY-=10;
+  	}
+})

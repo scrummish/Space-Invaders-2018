@@ -4,20 +4,10 @@ body{
 }
 #canvas{
 	width: 800;
-	height: 650;
+	height: 600;
 	padding: 0;
     margin: auto;
     display: block;
     box-shadow: 1px 5px 20px #1ddacf;
     z-index: 1;
-}
-
-#canvas2{
-	width: 800;
-	height: 650;
-	padding: 0;
-    margin: auto;
-    display: block;
-   	background-color: red;
-   	z-index: 2;
 }
