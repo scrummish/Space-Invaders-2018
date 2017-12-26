@@ -94,6 +94,21 @@ class Player {
 	}
 	shoot(fire){ // add firepower property that shoots 2 rounds per second
 		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
+		// let newBullet = new laserShot();
+		// newBullet.drawBullet();
+	}
+}
+
+class laserShot {
+	constructor(fire){
+		this.bullet = fire;
+	}
+	makeBullet(){
+		laser = new Image();
+		laser.src = "imgs/bullet.png"
+	}
+	drawBullet(){
+		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
 	}
 }
 
@@ -136,7 +151,14 @@ $("body").on("keydown",function(e) {
   		var stopInt = setInterval(()=>{
   			player.shoot(bullet);
   			bulletY-=1;
+  			$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
+  			
+  			if(bulletY == -15){
+  				$("#canvas").css("box-shadow", "1px 5px 20px #f4fffc");
+  				clearInterval(stopInt);
+  				bulletY = 118;
+  			}
   		},2);
-  		// clearInterval(stopInt);
+  			
   	}
 })
