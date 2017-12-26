@@ -154,7 +154,7 @@ $("body").on("keydown",function(e) {
   			$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
   			
   			if(bulletY == -15){
-  				$("#canvas").css("box-shadow", "1px 5px 20px #f4fffc");
+  				$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
   				clearInterval(stopInt);
   				bulletY = 118;
   			}
