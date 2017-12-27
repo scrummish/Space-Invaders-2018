@@ -92,25 +92,25 @@ class Player {
 			playerCoordinateX -= 13;
 		}
 	}
-	shoot(fire){ // add firepower property that shoots 2 rounds per second
+	shoot(fire){
 		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
 		// let newBullet = new laserShot();
 		// newBullet.drawBullet();
 	}
 }
 
-class laserShot {
-	constructor(fire){
-		this.bullet = fire;
-	}
-	makeBullet(){
-		laser = new Image();
-		laser.src = "imgs/bullet.png"
-	}
-	drawBullet(){
-		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
-	}
-}
+// class laserShot {
+// 	// constructor(fire){
+// 	// 	this.bullet = fire;
+// 	// }
+// 	makeBullet(){
+// 		laser = new Image();
+// 		laser.src = "imgs/bullet.png"
+// 	}
+// 	drawBullet(fire){
+// 		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
+// 	}
+// }
 
 // Game Object
 let game = {
@@ -140,25 +140,41 @@ let game = {
 		this.createPlayer(); // The global variable player will be your players ship
 	}
 }
+let keys = {37: false, 39: false, 32: false};
 
-$("body").on("keydown",function(e) {
-	if(e.keyCode == 37) { // left
-		player.moveleft();
-  	}
-  	else if(e.keyCode == 39) { // right
-    	player.moveright();
-  	} else if(e.keyCode == 32){
-  		var stopInt = setInterval(()=>{
-  			player.shoot(bullet);
-  			bulletY-=1;
-  			$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
-  			
-  			if(bulletY == -15){
-  				$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
-  				clearInterval(stopInt);
-  				bulletY = 118;
-  			}
-  		},2);
-  			
-  	}
+$(document).keydown(function(e) {
+	if (e.which in keys) {
+		keys[e.which] = true;
+		if (keys[37] && keys[32]){
+			player.moveleft();
+			shootbeam();
+		} else if (keys[39] && keys[32]){
+			player.moveright();
+			shootbeam();
+		} else if (keys[39]){
+			player.moveright();
+		} else if (keys[37]){
+			player.moveleft();
+		} else if (keys[32]){
+			shootbeam();
+		}
+	}
+}).keyup(function(e) {
+    if (e.which in keys) {
+        keys[e.which] = false;
+    }
 })
+
+function shootbeam(){
+	var stopInt = setInterval(()=>{ // This makes the bullet travel 
+		player.shoot(bullet);
+  		bulletY-=1;
+  		$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
+  		
+  		if(bulletY == -15){
+  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
+  			clearInterval(stopInt);
+  			bulletY = 118;
+  		}
+ 	},2);				  	
+}
