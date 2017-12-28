@@ -19,7 +19,13 @@
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
-	game.startGame();
+	$(document).on("click",()=>{
+		$("h1").css("display","block");
+		$(".scoreboard").css("display","block");
+		$(".modal").css("display","none");
+		game.startGame();
+		$(document).off("click")
+	})	
 });
 
 // Global Variables
@@ -29,7 +35,7 @@ let player;
 let shipRow = 50; // Starting point of enemy ships
 let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
-let playerCoordinateX = 0;
+let playerCoordinateX = 150;
 let bullet;
 let bulletY = 118; // y axis for bullet starting point
 let enemyPic;

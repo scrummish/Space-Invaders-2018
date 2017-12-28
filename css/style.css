@@ -5,6 +5,12 @@ body{
 	font-size: 60px;
 	color: #AA56FF;
 }
+.modal{
+	display: block;
+    position: absolute;
+    top: 260;
+    left: 143;
+}
 .scoreboard{
     height: 34px;
     position: absolute;
@@ -13,12 +19,14 @@ body{
     font-size: 40px;
     border-bottom: 1px solid #AA56FF;
     border-left: 1px solid #AA56FF;
+    display: none;
 }
 h1 {
 	top: 0;
     position: absolute;
     right: 0;
     font-size: 20px;
+    display: none;
 }
 #place-holder{
 	color: #202020;
