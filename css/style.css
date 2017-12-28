@@ -1,6 +1,29 @@
 body{
 	margin: 0;
 	background-color: #09152A;
+	font-family: 'Orbitron', sans-serif;
+	font-size: 60px;
+	color: #AA56FF;
+}
+.scoreboard{
+    height: 34px;
+    position: absolute;
+    top: 40;
+    right: 0;
+    font-size: 40px;
+    border-bottom: 1px solid #AA56FF;
+    border-left: 1px solid #AA56FF;
+}
+h1 {
+	top: 0;
+    position: absolute;
+    right: 0;
+    font-size: 20px;
+}
+#place-holder{
+	color: #202020;
+	position: relative;
+	display: inline;
 }
 canvas{
 	width: 800;
