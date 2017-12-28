@@ -19,7 +19,21 @@
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
+	$("<audio></audio>").attr({
+    	'src':'audio/start.mp3',
+    	'volume':0.1,
+    	'autoplay':'autoplay',
+    	'id': 'start'
+	}).appendTo("body");
+
 	$(document).on("click",()=>{
+		$("#start").attr("src", "''");
+		$("<audio></audio>").attr({
+	    	'src':'audio/level1.mp3',
+	    	'volume':0.1,
+	    	'autoplay':'autoplay'
+		}).appendTo("body");
+
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
 		$(".modal").css("display","none");
