@@ -26,19 +26,20 @@ $(document).ready(function() {
     	'id': 'start'
 	}).appendTo("body");
 
-	$(document).on("click",()=>{
+	$(".background").on("click",()=>{
 		$("#start").attr("src", "''");
 		$("<audio></audio>").attr({
 	    	'src':'audio/level1.mp3',
 	    	'volume':0.1,
 	    	'autoplay':'autoplay'
 		}).appendTo("body");
+		$(".background").css("background-image", "url("+"'https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif'"+")")
 
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
 		$(".modal").css("display","none");
 		game.startGame();
-		$(document).off("click")
+		$(".background").off("click")
 	})	
 });
 
@@ -53,38 +54,27 @@ let playerCoordinateX = 150;
 let bullet;
 let bulletY = 118; // y axis for bullet starting point
 let enemyPic;
-
-// Class for the ship
-class Ship {
-	constructor(ID, health){ 
-		this.health = health; 
-		this.Id = ID;
-		this.alive = true; // Might not need this. Call destroy function when enemy ship is shot
-	}
-	destroyMe(){
-		// Removes ship from the window, but cell remains in order to keep every ship in position
-		console.log("destroyed");
-	}
-	movement(){ // Provide functionality for ships to move back and forth 
-		console.log("test movement function");
-	}
-}
+let magazine = [];
 
 // Class that creates an entire fleet of ships
 class Fleet {
 	drawShip(newRow,shipsImage){
+		let yAxis = 5;
+		let xAxis = shipRow+newRow;
 		
-		$ctx.drawImage(shipsImage,shipRow+newRow,5,17,11);
+		$ctx.drawImage(shipsImage,xAxis,yAxis,17,11);
 		
-		$ctx.drawImage(shipsImage,shipRow+newRow,17,17,11);
+		$ctx.drawImage(shipsImage,xAxis,yAxis + 12,17,11);
 		
-		$ctx.drawImage(shipsImage,shipRow+newRow,29,17,11);
+		$ctx.drawImage(shipsImage,xAxis,yAxis + 24,17,11);
 	}
 	createShips(){ // a. 
 		shipRow += shipSpeed;
+
 		for (var i = 0; i <= 162; i+=18) { // creates 30 enemy ships 18px apart from the previous
 			enemyPic = new Image(); 
 			enemyPic.src = "imgs/ship.png";
+			$(enemyPic).attr("id",i) // adds the same id to each row
 			this.drawShip(i,enemyPic); 
 		}
 		if (shipRow < 0){ // This is the perimeter 
@@ -99,8 +89,6 @@ class Fleet {
 class Player {
 	drawPlayer(ship){
 		$ctx.drawImage(ship, playerCoordinateX,130,20,12);
-		bullet = new Image(); 
-		bullet.src = "imgs/bullet.png";
 	}
 	moveright(){
 		if(playerCoordinateX <= 273){
@@ -112,21 +100,32 @@ class Player {
 			playerCoordinateX -= 13;
 		}
 	}
-	drawFire(fire){
-		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
+}
+
+class Laser {
+	constructor(id){
+		this.x = playerCoordinateX + 8; // Players x axis and 8 pixels to center the shot
+		this.y = bulletY;
+		this.picture = new Image(); 
+		this.picture.src = "imgs/bullet.png";
+		this.id = id;
+		this.active = true;
 	}
-	fire(){
+	drawLaser(){
+		$ctx.drawImage(this.picture, this.x, this.y, 5, 15);
+	}
+	drawFire(charge){	
 		var stopInt = setInterval(()=>{ // This makes the bullet travel 
-			player.drawFire(bullet);
-	  		bulletY-=1;
+			charge.drawLaser();
+	  		this.y-=1;
 	  		$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
 	  		
-	  		if(bulletY == -15){
+	  		if(this.y == -15){
 	  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
 	  			clearInterval(stopInt);
-	  			bulletY = 118;
+	  			this.active = false;
 	  		}
-	 	},2);
+	 	},3);
 	}
 }
 
@@ -167,16 +166,22 @@ $(document).keydown(function(e) {
 		keys[e.which] = true;
 		if (keys[37] && keys[32]){
 			player.moveleft();
-			player.fire();
+			var bullet = new Laser(magazine.length);
+			magazine.push(bullet);
+			bullet.drawFire(bullet);
 		} else if (keys[39] && keys[32]){
 			player.moveright();
-			player.fire();
+			var bullet = new Laser(magazine.length);
+			magazine.push(bullet);
+			bullet.drawFire(bullet);
 		} else if (keys[39]){
 			player.moveright();
 		} else if (keys[37]){
 			player.moveleft();
 		} else if (keys[32]){
-			player.fire();
+			var bullet = new Laser(magazine.length);
+			magazine.push(bullet);
+			bullet.drawFire(bullet);
 		}
 	}
 }).keyup(function(e) {
