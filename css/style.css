@@ -2,12 +2,22 @@ body{
 	margin: 0;
 	background-color: #09152A;
 }
-#canvas{
+canvas{
 	width: 800;
 	height: 600;
 	padding: 0;
     margin: auto;
     display: block;
     box-shadow: 1px 5px 20px #1B94FB;
-    z-index: 1;
 }
+
+.background{
+	margin: 0 auto;
+	height: 600px;
+	width: 800px;
+	background-size: cover;
+	background-image: url("https://media.giphy.com/media/O0QCryNMAqiVW/giphy.gif");
+	top: 0;
+    position: relative;
+}
+

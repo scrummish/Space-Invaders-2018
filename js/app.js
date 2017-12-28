@@ -6,8 +6,8 @@
 * worlds. It's up to you to stop them! 											  *
 **********************************************************************************/
 
-// Enemy ships should bounce back and forth from wall to wall shooting downwards
-// Player can move from left to right using directional pad and shoot using spacebar
+// Enemy ships should bounce back and forth from wall to wall drawFireing downwards
+// Player can move from left to right using directional pad and drawFire using spacebar
 // Regular enemy ships have one life so they die on successful hit from player
 // Player also has one life and dies on successful hit from enemy ship (Backlog: make it three lifes after 10 rounds)
 // Boss ship starts at 1 life and increases by 1 every wave 
@@ -32,6 +32,7 @@ let framesPerSecond = 60;
 let playerCoordinateX = 0;
 let bullet;
 let bulletY = 118; // y axis for bullet starting point
+let enemyPic;
 
 // Class for the ship
 class Ship {
@@ -51,21 +52,20 @@ class Ship {
 
 // Class that creates an entire fleet of ships
 class Fleet {
-	constructor(){
-		// this.availableShips = []; // currently not using this with canvas
-	}
-	drawShip(newRow){
-		$ctx.fillStyle = "#1B94FB";
-		$ctx.fillRect(shipRow+newRow,5,15,9);
-		$ctx.fillStyle = "#1ddacf";
-		$ctx.fillRect(shipRow+newRow,17,15,9);
-		$ctx.fillStyle = "#AA56FF";
-		$ctx.fillRect(shipRow+newRow,29,15,9);
+	drawShip(newRow,shipsImage){
+		
+		$ctx.drawImage(shipsImage,shipRow+newRow,5,17,11);
+		
+		$ctx.drawImage(shipsImage,shipRow+newRow,17,17,11);
+		
+		$ctx.drawImage(shipsImage,shipRow+newRow,29,17,11);
 	}
 	createShips(){ // a. 
 		shipRow += shipSpeed;
 		for (var i = 0; i <= 162; i+=18) { // creates 30 enemy ships 18px apart from the previous
-			this.drawShip(i); 
+			enemyPic = new Image(); 
+			enemyPic.src = "imgs/ship.png";
+			this.drawShip(i,enemyPic); 
 		}
 		if (shipRow < 0){ // This is the perimeter 
 			shipSpeed = -shipSpeed; // Makes it bounce off the left side
@@ -92,25 +92,23 @@ class Player {
 			playerCoordinateX -= 13;
 		}
 	}
-	shoot(fire){
+	drawFire(fire){
 		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
-		// let newBullet = new laserShot();
-		// newBullet.drawBullet();
+	}
+	fire(){
+		var stopInt = setInterval(()=>{ // This makes the bullet travel 
+			player.drawFire(bullet);
+	  		bulletY-=1;
+	  		$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
+	  		
+	  		if(bulletY == -15){
+	  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
+	  			clearInterval(stopInt);
+	  			bulletY = 118;
+	  		}
+	 	},2);
 	}
 }
-
-// class laserShot {
-// 	// constructor(fire){
-// 	// 	this.bullet = fire;
-// 	// }
-// 	makeBullet(){
-// 		laser = new Image();
-// 		laser.src = "imgs/bullet.png"
-// 	}
-// 	drawBullet(fire){
-// 		$ctx.drawImage(fire, playerCoordinateX + 8,bulletY,5,15);
-// 	}
-// }
 
 // Game Object
 let game = {
@@ -126,12 +124,13 @@ let game = {
 		player.drawPlayer(playerShipImage);
 	},
 	startGame: function(){ // Starts the game
-		setInterval(()=>{ // Animates the enemy game at 60 frames per second
+		setInterval(()=>{ // Animates the game at 60 frames per second
+			$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
 			this.createCanvas();
 		},1000/framesPerSecond) 		
 	},
 	createCanvas: function(){ 
-		$ctx.fillStyle = "black"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
+		$ctx.fillStyle = "transparent"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
 		$ctx.fillRect(0,0,canvas.width,canvas.height); //https://www.w3schools.com/tags/canvas_fillrect.asp
 		this.createContext(); // Starts the proces of creating the rest of the game's elements
 	},
@@ -140,23 +139,24 @@ let game = {
 		this.createPlayer(); // The global variable player will be your players ship
 	}
 }
-let keys = {37: false, 39: false, 32: false};
+
+let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 
 $(document).keydown(function(e) {
 	if (e.which in keys) {
 		keys[e.which] = true;
 		if (keys[37] && keys[32]){
 			player.moveleft();
-			shootbeam();
+			player.fire();
 		} else if (keys[39] && keys[32]){
 			player.moveright();
-			shootbeam();
+			player.fire();
 		} else if (keys[39]){
 			player.moveright();
 		} else if (keys[37]){
 			player.moveleft();
 		} else if (keys[32]){
-			shootbeam();
+			player.fire();
 		}
 	}
 }).keyup(function(e) {
@@ -164,17 +164,3 @@ $(document).keydown(function(e) {
         keys[e.which] = false;
     }
 })
-
-function shootbeam(){
-	var stopInt = setInterval(()=>{ // This makes the bullet travel 
-		player.shoot(bullet);
-  		bulletY-=1;
-  		$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
-  		
-  		if(bulletY == -15){
-  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
-  			clearInterval(stopInt);
-  			bulletY = 118;
-  		}
- 	},2);				  	
-}
