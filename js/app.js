@@ -51,40 +51,10 @@ let shipRow = 50; // Starting point of enemy ships
 let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
 let playerCoordinateX = 150;
-let bullet;
 let bulletY = 118; // y axis for bullet starting point
 let enemyPic;
-let magazine = [];
-
-// Class that creates an entire fleet of ships
-class Fleet {
-	drawShip(newRow,shipsImage){
-		let yAxis = 5;
-		let xAxis = shipRow+newRow;
-		
-		$ctx.drawImage(shipsImage,xAxis,yAxis,17,11);
-		
-		$ctx.drawImage(shipsImage,xAxis,yAxis + 12,17,11);
-		
-		$ctx.drawImage(shipsImage,xAxis,yAxis + 24,17,11);
-	}
-	createShips(){ // a. 
-		shipRow += shipSpeed;
-
-		for (var i = 0; i <= 162; i+=18) { // creates 30 enemy ships 18px apart from the previous
-			enemyPic = new Image(); 
-			enemyPic.src = "imgs/ship.png";
-			$(enemyPic).attr("id",i) // adds the same id to each row
-			this.drawShip(i,enemyPic); 
-		}
-		if (shipRow < 0){ // This is the perimeter 
-			shipSpeed = -shipSpeed; // Makes it bounce off the left side
-		}
-		if((shipRow + 680) > 800){ // This is the perimeter 
-			shipSpeed = -shipSpeed; // Makes it bounce off the right side
-		}
-	}
-}
+let magazine = []; // Contains fired lasers
+let fleetArray = []; // Contains enemy ships
 
 class Player {
 	drawPlayer(ship){
@@ -100,9 +70,14 @@ class Player {
 			playerCoordinateX -= 13;
 		}
 	}
+	shoot(){
+		var bullet = new Laser(magazine.length);
+		magazine.push(bullet);
+		bullet.drawFire(bullet);
+	}
 }
 
-class Laser {
+class Laser { // Prototype for laser shots
 	constructor(id){
 		this.x = playerCoordinateX + 8; // Players x axis and 8 pixels to center the shot
 		this.y = bulletY;
@@ -129,11 +104,50 @@ class Laser {
 	}
 }
 
+// enemy ship once destroyed should no longer be repawned in the new frame
+// gotta keep track of enemy ship to know which one to not respawn 
+
+class EnemyShip{ // Prototype for enemy ships 
+	constructor(id){
+		this.x = shipRow;
+		this.y = 5;
+		this.width = 25;
+		this.height = 10;
+		this.picture = new Image(); 
+		this.picture.src = "imgs/ship5.png";
+		this.id = id;
+		this.alive = true;
+	}
+	drawShip(i,z){
+		$ctx.drawImage(this.picture, this.x + i, this.y + z, this.width, this.height);
+		
+		if (shipRow < 0){ // This is the perimeter 
+			shipSpeed = -shipSpeed; // Makes it bounce off the left side
+		}
+		if((shipRow + 705) > 800){ // This is the perimeter 
+			shipSpeed = -shipSpeed; // Makes it bounce off the right side
+		}
+	}
+}
+
+class Fleet{
+	createShipObj(){	
+		shipRow += shipSpeed; // Changes the placement of the ships every frame making it look like they are moving
+		for (var z = 0; z <= 30; z+=15) {
+			for (var i = 0; i <= 180 ; i+=30) {
+				let newShip1 = new EnemyShip(fleetArray.length,0);
+				fleetArray.push(newShip1); 
+				newShip1.drawShip(i,z);
+			}
+		}
+	}
+}
+
 // Game Object
 let game = {
 	createFleet: function(){ // Calling this function creates a new wave of enemies
-		enemyFleet = new Fleet();
-		enemyFleet.createShips();
+		let enemyFleet = new Fleet();
+		enemyFleet.createShipObj();	
 	},
 	createPlayer: function(){ // Creates a new player ship
 		player = new Player(); 
@@ -166,22 +180,16 @@ $(document).keydown(function(e) {
 		keys[e.which] = true;
 		if (keys[37] && keys[32]){
 			player.moveleft();
-			var bullet = new Laser(magazine.length);
-			magazine.push(bullet);
-			bullet.drawFire(bullet);
+			player.shoot();
 		} else if (keys[39] && keys[32]){
 			player.moveright();
-			var bullet = new Laser(magazine.length);
-			magazine.push(bullet);
-			bullet.drawFire(bullet);
+			player.shoot();
 		} else if (keys[39]){
 			player.moveright();
 		} else if (keys[37]){
 			player.moveleft();
 		} else if (keys[32]){
-			var bullet = new Laser(magazine.length);
-			magazine.push(bullet);
-			bullet.drawFire(bullet);
+			player.shoot();
 		}
 	}
 }).keyup(function(e) {
