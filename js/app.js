@@ -55,8 +55,18 @@ let bulletY = 118; // y axis for bullet starting point
 let enemyPic;
 let magazine = []; // Contains fired lasers
 let fleetArray = []; // Contains enemy ships
+let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
+var CANVAS_WIDTH = 800;
+var CANVAS_HEIGHT = 600;
 
 class Player {
+	constructor(){
+		this.active = true;
+		this.x = playerCoordinateX;
+		this.y = 130;
+		this.width = 20;
+		this.height = 12;
+	}
 	drawPlayer(ship){
 		$ctx.drawImage(ship, playerCoordinateX,130,20,12);
 	}
@@ -85,6 +95,8 @@ class Laser { // Prototype for laser shots
 		this.picture.src = "imgs/bullet.png";
 		this.id = id;
 		this.active = true;
+		this.width = 5;
+		this.height = 15;
 	}
 	drawLaser(){
 		$ctx.drawImage(this.picture, this.x, this.y, 5, 15);
@@ -107,48 +119,49 @@ class Laser { // Prototype for laser shots
 // enemy ship once destroyed should no longer be repawned in the new frame
 // gotta keep track of enemy ship to know which one to not respawn 
 
-class EnemyShip{ // Prototype for enemy ships 
-	constructor(id){
-		this.x = shipRow;
-		this.y = 5;
-		this.width = 25;
-		this.height = 10;
-		this.picture = new Image(); 
-		this.picture.src = "imgs/ship5.png";
-		this.id = id;
-		this.alive = true;
-	}
-	drawShip(i,z){
-		$ctx.drawImage(this.picture, this.x + i, this.y + z, this.width, this.height);
+// class EnemyShip{ // Prototype for enemy ships 
+// 	constructor(id){
+// 		this.x = shipRow;
+// 		this.y = 5;
+// 		this.width = 25;
+// 		this.height = 10;
+// 		this.picture = new Image(); 
+// 		this.picture.src = "imgs/ship5.png";
+// 		this.id = id;
+// 		this.alive = true;
+// 	}
+// 	drawShip(i,z){
+// 		$ctx.drawImage(this.picture, this.x + i, this.y + z, this.width, this.height);
 		
-		if (shipRow < 0){ // This is the perimeter 
-			shipSpeed = -shipSpeed; // Makes it bounce off the left side
-		}
-		if((shipRow + 705) > 800){ // This is the perimeter 
-			shipSpeed = -shipSpeed; // Makes it bounce off the right side
-		}
-	}
-}
+// 		if (shipRow < 0){ // This is the perimeter 
+// 			shipSpeed = -shipSpeed; // Makes it bounce off the left side
+// 		}
+// 		if((shipRow + 705) > 800){ // This is the perimeter 
+// 			shipSpeed = -shipSpeed; // Makes it bounce off the right side
+// 		}
+// 	}
+// }
 
-class Fleet{
-	createShipObj(){	
-		shipRow += shipSpeed; // Changes the placement of the ships every frame making it look like they are moving
-		for (var z = 0; z <= 30; z+=15) {
-			for (var i = 0; i <= 180 ; i+=30) {
-				let newShip1 = new EnemyShip(fleetArray.length,0);
-				fleetArray.push(newShip1); 
-				newShip1.drawShip(i,z);
-			}
-		}
-	}
-}
+// let newShip1;
+// class Fleet{
+// 	createShipObj(){	
+// 		shipRow += shipSpeed; // Changes the placement of the ships every frame making it look like they are moving
+// 		for (var z = 0; z <= 30; z+=15) {
+// 			for (var i = 0; i <= 180 ; i+=30) {
+// 				newShip1 = new EnemyShip(fleetArray.length,0);
+// 				fleetArray.push(newShip1); 
+// 				newShip1.drawShip(i,z);
+// 			}
+// 		}
+// 	}
+// }
 
 // Game Object
 let game = {
-	createFleet: function(){ // Calling this function creates a new wave of enemies
-		let enemyFleet = new Fleet();
-		enemyFleet.createShipObj();	
-	},
+	// createFleet: function(){ // Calling this function creates a new wave of enemies
+	// 	let enemyFleet = new Fleet();
+	// 	enemyFleet.createShipObj();	
+	// },
 	createPlayer: function(){ // Creates a new player ship
 		player = new Player(); 
 
@@ -158,22 +171,113 @@ let game = {
 	},
 	startGame: function(){ // Starts the game
 		setInterval(()=>{ // Animates the game at 60 frames per second
-			$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
-			this.createCanvas();
+			update();
+			draw();
+			this.createContext();
+			
+
 		},1000/framesPerSecond) 		
 	},
-	createCanvas: function(){ 
-		$ctx.fillStyle = "transparent"; // https://www.w3schools.com/tags/canvas_fillstyle.asp
-		$ctx.fillRect(0,0,canvas.width,canvas.height); //https://www.w3schools.com/tags/canvas_fillrect.asp
-		this.createContext(); // Starts the proces of creating the rest of the game's elements
-	},
 	createContext: function(){ // Creates the enemy fleet and player ship
-		this.createFleet(); // The global variable enemyFleet will be your fleet 
+		// this.createFleet(); // The global variable enemyFleet will be your fleet 
 		this.createPlayer(); // The global variable player will be your players ship
 	}
 }
 
-let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
+let enemies = [];
+
+function Enemy(I) {
+  I = I || {};
+
+  I.active = true;
+  I.age = Math.floor(Math.random() * 128);
+
+  I.x = Math.floor(Math.random() * 270); // Spawns ships at random locations on x coordinate
+  I.y = 0;
+  I.xVelocity = 0;
+  I.yVelocity = 1;
+
+  I.picture = new Image(); 
+  I.picture.src = "imgs/ship5.png";
+
+  I.width = 30;
+  I.height = 20;
+
+  I.inBounds = function() {
+    return I.x >= 0 && I.x <= CANVAS_WIDTH &&
+      I.y >= 0 && I.y <= CANVAS_HEIGHT;
+  };
+
+  I.draw = function() {
+    $ctx.drawImage(this.picture, this.x, this.y , this.width, this.height);
+  };
+
+  I.explode = function() {
+    this.active = false;
+  };
+
+  I.update = function() {
+    I.x += I.xVelocity;
+    I.y += I.yVelocity;
+
+    I.xVelocity = 1 * Math.sin(I.age * Math.PI / 64); // Makes them wobble around 
+
+    I.age++;
+
+    I.active = I.active && I.inBounds();
+  };
+
+  return I;
+};
+
+function update() {
+
+  enemies.forEach(function(enemy) {
+    enemy.update();
+  });
+
+  enemies = enemies.filter(function(enemy) {
+    return enemy.active;
+  });
+
+  if(Math.random() < 0.01) {
+    enemies.push(Enemy());
+  }
+  handleCollisions();
+}
+
+function draw() {
+	$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
+  	enemies.forEach(function(enemy) {
+    enemy.draw();
+  })
+}
+
+function collides(a, b) {
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+function handleCollisions() {
+  magazine.forEach(function(bullet) {
+    enemies.forEach(function(enemy) {
+      if (collides(bullet, enemy)) {
+        enemy.explode();
+        console.log("working");
+        bullet.active = false;
+      }
+    })
+  })
+
+  enemies.forEach(function(enemy) {
+    if (collides(enemy, player)) {
+      enemy.explode();
+      player.explode();
+    }
+  })
+}
 
 $(document).keydown(function(e) {
 	if (e.which in keys) {
