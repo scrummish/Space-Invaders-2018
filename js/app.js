@@ -10,46 +10,32 @@
 // Player can move from left to right using directional pad and fire using spacebar
 // Regular enemy ships have one life so they die on successful hit from player
 
-// Objective: Survive the most rounds without letting a set amount of enemyFleetArray pass you.
+// Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
 // Randomly add a cromulon head in the background
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
-	$("<audio></audio>").attr({
-    	'src':'audio/start.mp3',
-    	'autoplay':'autoplay',
-    	'id': 'start'
-	}).appendTo("body");
-
-	$(".background").on("click",()=>{
-		$("#start").attr("src", "''");
-		$("<audio></audio>").attr({
-	    	'src':'audio/level1.mp3',
-	    	'autoplay':'autoplay'
-		}).appendTo("body");
-		// $(".background").css("background-image", "url(" + "'imgs/800x600.png'" + ")" )
-
-		$("h1").css("display","block");
-		$(".scoreboard").css("display","block");
-		$(".modal").css("display","none");
-		game.startGame();
-		$(".background").off("click"); // Removes the click listener on the element with the background class
-	})	
+	game.playAudio(); 
+	$background.on("click",()=>{
+		game.level1(); // Changes variables to current levels values
+		game.startGame(); // Starts the game at its current level
+		$background.off("click"); // Removes the click listener on the element with the background class
+	});	
 });
 
 // Global Variables
+let $background = $(".background");
+let $song = $("#start");
 let $ctx = $("#canvas")[0].getContext("2d");
-let enemyFleet;
 let player;
-let shipRow = 50; // Starting point of enemy ships
-let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
 let playerCoordinateX = 150;
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 let scoreCounter = 0; // Keeps track of the amount of enemyFleetArray you shot down
-let enemiesPassed = 0; // Keeps track of the enemies who have passed the player
+let enemiesPassed = 10; // Amount of enemies allowed to pass is 1 less than enemies passed or game over
+let damageTaken = 10; // Amount of damage allowed to take is 1 less than damageTaken or else game is over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 
@@ -94,26 +80,41 @@ let game = {
 	           a.y + a.height > b.y;
 	},
 	handleCollisions: function() {
-	  firedLaserArray.forEach(function(bullet) { // Iterates through the fired lasers one by one
-	    enemyFleetArray.forEach(function(enemy) { // Iterates through all the active enemy ships and checks them against the current laser 
-	      if (game.collides(bullet, enemy)) { // Checks if any enemy ship has collided with the current laser 
-	        enemy.die();
-	        scoreCounter++;
-	      }
-	    })
-	  });
-	  enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
-	    if (game.collides(enemy, player)) {
-	      enemy.die(); // If the enemy ship being checked has collided with the player it calls this method on that ship
-	    }
-	  });
-
-	  enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
-	    if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
-	      enemy.die();
-	      enemiesPassed++;
-	    }
-	  })
+		firedLaserArray.forEach(function(bullet) { // Iterates through the fired lasers one by one
+	    	enemyFleetArray.forEach(function(enemy) { // Iterates through all the active enemy ships and checks them against the current laser 
+		      	if (game.collides(bullet, enemy)) { // Checks if any enemy ship has collided with the current laser 
+			        enemy.die();
+			        scoreCounter++;
+		      	};
+	    	});
+	  	});
+	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
+	    	if (game.collides(enemy, player)) {
+	     		enemy.die(); // If the enemy ship being checked has collided with the player it calls this method on that ship
+		 		damageTaken--;  
+	    	};
+	  	});
+	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
+	    	if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
+	      		enemy.die();
+	      		enemiesPassed++;
+	    	};
+	  	});
+	},
+	playAudio: function(){
+		$song.attr({
+	    	'src':'audio/start.mp3',
+	    	'autoplay':'autoplay',
+	    	'id': 'start'
+		});
+	},
+	level1: function(){
+		$song.attr({
+	    	'src':'audio/level1.mp3'
+		});
+		$("h1").css("display","block");
+		$(".scoreboard").css("display","block");
+		$(".modal").css("display","none");
 	},
 	enemyVictoryPoint: { // If an enemy ship collides with the enemyVictoryPoint object, it means they went passed the player and successfully invaded the planet your protecting
 		x: 0,
@@ -200,7 +201,6 @@ class Laser { // Prototype for laser shots
 			charge.drawLaser(); // Redraws the laser shot with its updated y coordinate
 	  		this.y-=1;
 	  		$("#canvas").css("box-shadow", "1px 5px 20px #AA56FF"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
-	  		
 	  		if(this.y == -15){
 	  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB"); // Returns the canvas broders original color once the laser shot is out of the view
 	  			clearInterval(stopInt); // stops the laser from traveling
