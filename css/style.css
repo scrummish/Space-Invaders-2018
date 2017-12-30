@@ -29,7 +29,8 @@ h1 {
     display: none;
 }
 #place-holder{
-	color: #202020;
+	/*color: #202020;*/
+	color: #AA56FF;
 	position: relative;
 	display: inline;
 }

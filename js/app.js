@@ -21,7 +21,6 @@
 $(document).ready(function() {
 	$("<audio></audio>").attr({
     	'src':'audio/start.mp3',
-    	'volume':0.1,
     	'autoplay':'autoplay',
     	'id': 'start'
 	}).appendTo("body");
@@ -30,7 +29,6 @@ $(document).ready(function() {
 		$("#start").attr("src", "''");
 		$("<audio></audio>").attr({
 	    	'src':'audio/level1.mp3',
-	    	'volume':0.1,
 	    	'autoplay':'autoplay'
 		}).appendTo("body");
 		$(".background").css("background-image", "url("+"'https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif'"+")")
@@ -56,6 +54,7 @@ let enemyPic;
 let magazine = []; // Contains fired lasers
 let fleetArray = []; // Contains enemy ships
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
+let scoreCounter = 0;
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
 
@@ -83,6 +82,7 @@ class Player {
 	shoot(){
 		var bullet = new Laser(magazine.length);
 		magazine.push(bullet);
+		bullet.laserFx();
 		bullet.drawFire(bullet);
 	}
 }
@@ -114,54 +114,17 @@ class Laser { // Prototype for laser shots
 	  		}
 	 	},3);
 	}
+	laserFx(){
+		let $music = $("<audio></audio>").attr({
+	    	'src':'audio/laser.mp3',
+	    	'autoplay':'autoplay',
+		})
+		$music[0].volume = 0.1;
+		$music.appendTo("body");
+	}
 }
 
-// enemy ship once destroyed should no longer be repawned in the new frame
-// gotta keep track of enemy ship to know which one to not respawn 
-
-// class EnemyShip{ // Prototype for enemy ships 
-// 	constructor(id){
-// 		this.x = shipRow;
-// 		this.y = 5;
-// 		this.width = 25;
-// 		this.height = 10;
-// 		this.picture = new Image(); 
-// 		this.picture.src = "imgs/ship5.png";
-// 		this.id = id;
-// 		this.alive = true;
-// 	}
-// 	drawShip(i,z){
-// 		$ctx.drawImage(this.picture, this.x + i, this.y + z, this.width, this.height);
-		
-// 		if (shipRow < 0){ // This is the perimeter 
-// 			shipSpeed = -shipSpeed; // Makes it bounce off the left side
-// 		}
-// 		if((shipRow + 705) > 800){ // This is the perimeter 
-// 			shipSpeed = -shipSpeed; // Makes it bounce off the right side
-// 		}
-// 	}
-// }
-
-// let newShip1;
-// class Fleet{
-// 	createShipObj(){	
-// 		shipRow += shipSpeed; // Changes the placement of the ships every frame making it look like they are moving
-// 		for (var z = 0; z <= 30; z+=15) {
-// 			for (var i = 0; i <= 180 ; i+=30) {
-// 				newShip1 = new EnemyShip(fleetArray.length,0);
-// 				fleetArray.push(newShip1); 
-// 				newShip1.drawShip(i,z);
-// 			}
-// 		}
-// 	}
-// }
-
-// Game Object
 let game = {
-	// createFleet: function(){ // Calling this function creates a new wave of enemies
-	// 	let enemyFleet = new Fleet();
-	// 	enemyFleet.createShipObj();	
-	// },
 	createPlayer: function(){ // Creates a new player ship
 		player = new Player(); 
 
@@ -174,8 +137,6 @@ let game = {
 			update();
 			draw();
 			this.createContext();
-			
-
 		},1000/framesPerSecond) 		
 	},
 	createContext: function(){ // Creates the enemy fleet and player ship
@@ -240,10 +201,11 @@ function update() {
     return enemy.active;
   });
 
-  if(Math.random() < 0.01) {
+  if(Math.random() < 0.03) {
     enemies.push(Enemy());
   }
   handleCollisions();
+  $("#place-holder").text(scoreCounter);
 }
 
 function draw() {
@@ -265,7 +227,7 @@ function handleCollisions() {
     enemies.forEach(function(enemy) {
       if (collides(bullet, enemy)) {
         enemy.explode();
-        console.log("working");
+        scoreCounter++;
         bullet.active = false;
       }
     })
