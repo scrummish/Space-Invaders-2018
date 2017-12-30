@@ -29,7 +29,6 @@ h1 {
     display: none;
 }
 #place-holder{
-	/*color: #202020;*/
 	color: #AA56FF;
 	position: relative;
 	display: inline;
@@ -43,13 +42,50 @@ canvas{
     box-shadow: 1px 5px 20px #1B94FB;
 }
 
+/*https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif*/
+/*background-image: url("https://s-media-cache-ak0.pinimg.com/originals/49/bf/26/49bf261b558f1228ec3481da309cdb77.gif");*/
+/*https://www.w3schools.com/css/css3_animations.asp*/
 .background{
-	margin: 0 auto;
-	height: 600px;
-	width: 800px;
-	background-size: cover;
-	background-image: url("https://s-media-cache-ak0.pinimg.com/originals/49/bf/26/49bf261b558f1228ec3481da309cdb77.gif");
-	top: 0;
-    position: relative;
+  position:fixed;
+  background: url('../imgs/gif1.gif');
+  -webkit-animation:10s scroll infinite linear reverse;
+  -moz-animation:10s scroll infinite linear reverse;
+  -o-animation:10s scroll infinite linear reverse;
+  -ms-animation:15s scroll infinite linear reverse;
+  animation:15s scroll infinite linear reverse;
+  margin: 0 auto;
+  position: relative;
+  height: 600px;
+  width: 800px;
+}
+
+@-webkit-keyframes scroll{
+  100%{
+    background-position:0px -3000px;
+  }
+}
+
+@-moz-keyframes scroll{
+  100%{
+    background-position:0px -3000px;
+  }
+}
+
+@-o-keyframes scroll{
+  100%{
+    background-position:0px -3000px;
+  }
+}
+
+@-ms-keyframes scroll{
+  100%{
+    background-position:0px -3000px;
+  }
+}
+
+@keyframes scroll{
+  100%{
+    background-position:0px -3000px;
+  }
 }
 

@@ -28,7 +28,7 @@ $(document).ready(function() {
 	    	'src':'audio/level1.mp3',
 	    	'autoplay':'autoplay'
 		}).appendTo("body");
-		$(".background").css("background-image", "url("+"'https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif'"+")")
+		// $(".background").css("background-image", "url(" + "'imgs/800x600.png'" + ")" )
 
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
@@ -119,7 +119,7 @@ class Laser { // Prototype for laser shots
 		this.x = playerCoordinateX + 8; // Players x axis and 8 pixels to center the shot
 		this.y = bulletY;
 		this.picture = new Image(); 
-		this.picture.src = "imgs/bullet.png";
+		this.picture.src = "imgs/bulletpurple.png";
 		this.id = id;
 		this.active = true;
 		this.width = 5;
@@ -132,7 +132,7 @@ class Laser { // Prototype for laser shots
 		var stopInt = setInterval(()=>{ // This makes the bullet travel 
 			charge.drawLaser();
 	  		this.y-=1;
-	  		$("#canvas").css("box-shadow", "1px 5px 20px #1ddacf");
+	  		$("#canvas").css("box-shadow", "1px 5px 20px #AA56FF");
 	  		
 	  		if(this.y == -15){
 	  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB");
