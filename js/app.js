@@ -6,14 +6,11 @@
 * worlds. It's up to you to stop them! 											  *
 **********************************************************************************/
 
-// Enemy ships should bounce back and forth from wall to wall drawFireing downwards
-// Player can move from left to right using directional pad and drawFire using spacebar
+
+// Player can move from left to right using directional pad and fire using spacebar
 // Regular enemy ships have one life so they die on successful hit from player
-// Player also has one life and dies on successful hit from enemy ship (Backlog: make it three lifes after 10 rounds)
-// Boss ship starts at 1 life and increases by 1 every wave 
-// Boss ship firing speed increases every wave
-// Boss ship has random reloads that last 5 seconds 
-// Objective: Survive the most rounds
+
+// Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
 // Randomly add a cromulon head in the background
 
@@ -50,13 +47,11 @@ let shipSpeed = 1; // Enemy ship speed
 let framesPerSecond = 60;
 let playerCoordinateX = 150;
 let bulletY = 118; // y axis for bullet starting point
-let enemyPic;
-let magazine = []; // Contains fired lasers
-let fleetArray = []; // Contains enemy ships
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
-let scoreCounter = 0;
-var CANVAS_WIDTH = 800;
-var CANVAS_HEIGHT = 600;
+let scoreCounter = 0; // Keeps track of the amount of enemies you shot down
+let enemiesPast = 0; // Keeps track of the enemies who have gone past the player
+let enemies = []; // Array containing spawned enemy ships
+let magazine = []; // Contains fired lasers
 
 class Player {
 	constructor(){
@@ -85,6 +80,38 @@ class Player {
 		bullet.laserFx();
 		bullet.drawFire(bullet);
 	}
+}
+
+class Enemy { 
+	constructor(){
+		this.picture = new Image(); 
+  		this.picture.src = "imgs/ship5.png";
+		this.active = true;
+	 	this.age = Math.floor(Math.random() * 128);
+	 	this.x = Math.floor(Math.random() * 270); // Spawns ships at random locations on x coordinate
+	 	this.y = 0;
+	 	this.width = 30;
+  		this.height = 20;
+		this.xVelocity = 0;
+		this.yVelocity = 1;
+	}
+	inBounds() {
+    	return this.x >= 0 && this.x <= 800 &&
+      	this.y >= 0 && this.y <= 600;
+  	}
+	draw() {
+    	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height);
+  	}
+	explode() {
+    	this.active = false;
+  	}	
+	update() {
+    	this.x += this.xVelocity;
+    	this.y += this.yVelocity;
+    	this.xVelocity = 1 * Math.sin(this.age * Math.PI / 64); // Makes them wobble around 
+    	this.age++;
+    	this.active = this.active && this.inBounds();
+  	}
 }
 
 class Laser { // Prototype for laser shots
@@ -140,104 +167,52 @@ let game = {
 		},1000/framesPerSecond) 		
 	},
 	createContext: function(){ // Creates the enemy fleet and player ship
-		// this.createFleet(); // The global variable enemyFleet will be your fleet 
 		this.createPlayer(); // The global variable player will be your players ship
+	},
+	collides: function(a, b) { // Algorithm for checking if two squared objects collide
+	  	return a.x < b.x + b.width &&
+	         a.x + a.width > b.x &&
+	         a.y < b.y + b.height &&
+	         a.y + a.height > b.y;
+	},
+	handleCollisions: function() {
+	  magazine.forEach(function(bullet) {
+	    enemies.forEach(function(enemy) {
+	      if (game.collides(bullet, enemy)) {
+	        enemy.explode();
+	        scoreCounter++;
+	      }
+	    })
+	  });
+
+	  enemies.forEach(function(enemy) {
+	    if (game.collides(enemy, player)) {
+	      enemy.explode();
+	      player.explode();
+	    }
+	  });
 	}
 }
 
-let enemies = [];
-
-function Enemy(I) {
-  I = I || {};
-
-  I.active = true;
-  I.age = Math.floor(Math.random() * 128);
-
-  I.x = Math.floor(Math.random() * 270); // Spawns ships at random locations on x coordinate
-  I.y = 0;
-  I.xVelocity = 0;
-  I.yVelocity = 1;
-
-  I.picture = new Image(); 
-  I.picture.src = "imgs/ship5.png";
-
-  I.width = 30;
-  I.height = 20;
-
-  I.inBounds = function() {
-    return I.x >= 0 && I.x <= CANVAS_WIDTH &&
-      I.y >= 0 && I.y <= CANVAS_HEIGHT;
-  };
-
-  I.draw = function() {
-    $ctx.drawImage(this.picture, this.x, this.y , this.width, this.height);
-  };
-
-  I.explode = function() {
-    this.active = false;
-  };
-
-  I.update = function() {
-    I.x += I.xVelocity;
-    I.y += I.yVelocity;
-
-    I.xVelocity = 1 * Math.sin(I.age * Math.PI / 64); // Makes them wobble around 
-
-    I.age++;
-
-    I.active = I.active && I.inBounds();
-  };
-
-  return I;
-};
-
 function update() {
-
-  enemies.forEach(function(enemy) {
-    enemy.update();
-  });
-
-  enemies = enemies.filter(function(enemy) {
-    return enemy.active;
-  });
-
-  if(Math.random() < 0.03) {
-    enemies.push(Enemy());
-  }
-  handleCollisions();
-  $("#place-holder").text(scoreCounter);
+	var enemy = new Enemy();
+  	enemies.forEach(function(enemy) {
+    	enemy.update();
+  	})
+  	enemies = enemies.filter(function(enemy) {
+    	return enemy.active;
+  	})
+  	if(Math.random() < 0.01) { // Frequency of ships spawning
+   		enemies.push(enemy);
+  	}
+  	game.handleCollisions();
+  	$("#place-holder").text(scoreCounter);
 }
 
 function draw() {
 	$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
   	enemies.forEach(function(enemy) {
     enemy.draw();
-  })
-}
-
-function collides(a, b) {
-  return a.x < b.x + b.width &&
-         a.x + a.width > b.x &&
-         a.y < b.y + b.height &&
-         a.y + a.height > b.y;
-}
-
-function handleCollisions() {
-  magazine.forEach(function(bullet) {
-    enemies.forEach(function(enemy) {
-      if (collides(bullet, enemy)) {
-        enemy.explode();
-        scoreCounter++;
-        bullet.active = false;
-      }
-    })
-  })
-
-  enemies.forEach(function(enemy) {
-    if (collides(enemy, player)) {
-      enemy.explode();
-      player.explode();
-    }
   })
 }
 
