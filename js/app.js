@@ -38,6 +38,8 @@ let enemiesPassed = 10; // Amount of enemies allowed to pass is 1 less than enem
 let damageTaken = 10; // Amount of damage allowed to take is 1 less than damageTaken or else game is over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
+let enemySpeed = .5; // Variable to adjust every level for dificulty setting
+let activateBoss = false;
 
 let game = {
 	startGame: function(){ // Starts the game
@@ -85,6 +87,58 @@ let game = {
 		      	if (game.collides(bullet, enemy)) { // Checks if any enemy ship has collided with the current laser 
 			        enemy.die();
 			        scoreCounter++;
+			        if (scoreCounter === 130){
+			        	activateBoss = true;
+			        	if (activateBoss){
+							game.level1Boss.music();
+							activateBoss = false;
+						};
+			        } else if (scoreCounter >= 130){
+			        	enemySpeed = 1.3;
+			        	$background.css(
+			         		// -webkit-animation:25s scroll infinite linear reverse;
+  							// -moz-animation:25s scroll infinite linear reverse;
+  							// -o-animation:25s scroll infinite linear reverse;
+  							// -ms-animation:25s scroll infinite linear reverse;
+  							"animation", "20s scroll infinite linear reverse"
+			        	);
+			        } else if (scoreCounter >= 100){
+			        	enemySpeed = 1.3;
+			        	$background.css(
+			         		// -webkit-animation:25s scroll infinite linear reverse;
+  							// -moz-animation:25s scroll infinite linear reverse;
+  							// -o-animation:25s scroll infinite linear reverse;
+  							// -ms-animation:25s scroll infinite linear reverse;
+  							"animation", "5s scroll infinite linear reverse"
+			        	);
+			        } else if (scoreCounter >= 75){
+			        	enemySpeed = 1.1;
+			        	$background.css(
+			         		// -webkit-animation:25s scroll infinite linear reverse;
+  							// -moz-animation:25s scroll infinite linear reverse;
+  							// -o-animation:25s scroll infinite linear reverse;
+  							// -ms-animation:25s scroll infinite linear reverse;
+  							"animation", "10s scroll infinite linear reverse"
+			        	);
+			        } else if (scoreCounter >= 50){
+			        	enemySpeed = .9;
+			        	$background.css(
+			         		// -webkit-animation:25s scroll infinite linear reverse;
+  							// -moz-animation:25s scroll infinite linear reverse;
+  							// -o-animation:25s scroll infinite linear reverse;
+  							// -ms-animation:25s scroll infinite linear reverse;
+  							"animation", "15s scroll infinite linear reverse"
+			        	);
+			        } else if (scoreCounter >= 25){
+			        	enemySpeed = .7;
+			        	$background.css(
+			         		// -webkit-animation:25s scroll infinite linear reverse;
+  							// -moz-animation:25s scroll infinite linear reverse;
+  							// -o-animation:25s scroll infinite linear reverse;
+  							// -ms-animation:25s scroll infinite linear reverse;
+  							"animation", "20s scroll infinite linear reverse"
+			        	);
+			        }
 		      	};
 	    	});
 	  	});
@@ -121,6 +175,16 @@ let game = {
 		y: 147,
 		width: 300,
 		height: 2,
+	},
+	level1Boss: {
+		music: function(){
+			let $sound = $("<audio></audio>").attr({
+	    	'src':'audio/boss.mp3',
+	    	'autoplay':'autoplay',
+			});
+			// $sound[0].volume = 0.5;
+			$sound.appendTo("body");
+		}
 	}
 }
 
@@ -133,23 +197,23 @@ class Player {
 		this.height = 12;
 	}
 	drawPlayer(ship){
-		$ctx.drawImage(ship, playerCoordinateX,130,20,12);
+		$ctx.drawImage(ship, playerCoordinateX,130,20,12); // Creates the players ship
 	}
 	moveright(){
-		if(playerCoordinateX <= 273){
-			playerCoordinateX += 13;
+		if(playerCoordinateX <= 273){ 
+			playerCoordinateX += 13; // If condition is met, player moves on the x axis 
 		} 	
 	}
 	moveleft(){
 		if(playerCoordinateX >= 4 ){
-			playerCoordinateX -= 13;
+			playerCoordinateX -= 13; // If condition is met, player moves on the x axis 
 		}
 	}
 	shoot(){
-		var bullet = new Laser(firedLaserArray.length);
-		firedLaserArray.push(bullet);
-		bullet.laserFx();
-		bullet.drawFire(bullet);
+		var bullet = new Laser(firedLaserArray.length); // Creates an instance of a laser
+		firedLaserArray.push(bullet); // Pushes laser into an array
+		bullet.laserFx(); // Adds a shooting sound effect
+		bullet.drawFire(bullet); // Creates the laser
 	}
 }
 
@@ -163,14 +227,14 @@ class Enemy {
 	 	this.width = 30;
   		this.height = 20;
 		this.xVelocity = 0;
-		this.yVelocity = 1;
+		this.yVelocity = enemySpeed; // Tweak this for speed of falling ships
 	}
 	inBounds() { // returns true if enemy ship is within the height and width of the canvas
     	return this.x >= 0 && this.x <= 800 &&
       	this.y >= 0 && this.y <= 600;
   	}
 	draw() {
-    	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height);
+    	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height); // Creates the enemies ship
   	}
 	die() {
     	this.active = false;
@@ -203,8 +267,8 @@ class Laser { // Prototype for laser shots
 	  		$("#canvas").css("box-shadow", "1px 5px 20px #AA56FF"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
 	  		if(this.y == -15){
 	  			$("#canvas").css("box-shadow", "1px 5px 20px #1B94FB"); // Returns the canvas broders original color once the laser shot is out of the view
+	  			firedLaserArray.splice(0,1); // Removes the laser from the array
 	  			clearInterval(stopInt); // stops the laser from traveling
-	  			// Backlog: Make it so the player can only shoot a certain amount of lasers
 	  		}
 	 	},3); // Change the speed the laser travels here
 	}
@@ -217,7 +281,6 @@ class Laser { // Prototype for laser shots
 		$laserSound.appendTo("body");
 	}
 }
-
 
 $(document).keydown(function(e) {
 	if (e.which in keys) {

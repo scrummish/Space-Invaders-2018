@@ -48,11 +48,11 @@ canvas{
 .background{
   position:fixed;
   background: url('../imgs/gif1.gif');
-  -webkit-animation:10s scroll infinite linear reverse;
-  -moz-animation:10s scroll infinite linear reverse;
-  -o-animation:10s scroll infinite linear reverse;
-  -ms-animation:15s scroll infinite linear reverse;
-  animation:15s scroll infinite linear reverse;
+  -webkit-animation:25s scroll infinite linear reverse;
+  -moz-animation:25s scroll infinite linear reverse;
+  -o-animation:25s scroll infinite linear reverse;
+  -ms-animation:25s scroll infinite linear reverse;
+  animation:25s scroll infinite linear reverse;
   margin: 0 auto;
   position: relative;
   height: 600px;
