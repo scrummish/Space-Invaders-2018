@@ -19,34 +19,78 @@ body{
   color: red;
 }
 .scoreboard{
-    height: 34px;
-    position: absolute;
-    top: 40;
-    right: 0;
-    font-size: 40px;
-    border-bottom: 1px solid #AA56FF;
-    border-left: 1px solid #AA56FF;
-    display: none;
+  height: 34px;
+  position: absolute;
+  top: 40;
+  right: 0;
+  font-size: 40px;
+  border-bottom: 1px solid #AA56FF;
+  border-left: 1px solid #AA56FF;
+  display: none;
 }
-h1 {
+.life{
+  height: 34px;
+  position: absolute;
+  top: 563;
+  right: 0;
+  font-size: 40px;
+  border-bottom: 1px solid #AA56FF;
+  border-left: 1px solid #AA56FF;
+  display: none;
+}
+.enemy-invasion{
+  height: 34px;
+  position: absolute;
+  top: 563;
+  left: 0;
+  font-size: 40px;
+  border-bottom: 1px solid #AA56FF;
+  border-right: 1px solid #AA56FF;
+  display: none;
+}
+#h1-score{
 	top: 0;
-    position: absolute;
-    right: 0;
-    font-size: 20px;
-    display: none;
+  position: absolute;
+  right: 0;
+  font-size: 20px;
+  display: none;
+}
+#h1-life{
+  top: 532;
+  position: absolute;
+  right: 0;
+  font-size: 20px;
+  display: none;
+}
+#h1-enemy{
+  left: 0;
+  top: 532;
+  position: absolute;
+  font-size: 20px;
+  display: none;
 }
 #score{
 	color: #AA56FF;
 	position: relative;
 	display: inline;
 }
+#life-points{
+  color: #AA56FF;
+  position: relative;
+  display: inline;
+}
+#enemy-points{
+  color: #AA56FF;
+  position: relative;
+  display: inline;
+}
 canvas{
 	width: 800;
 	height: 600;
 	padding: 0;
-    margin: auto;
-    display: block;
-    box-shadow: 1px 5px 20px #1B94FB;
+  margin: auto;
+  display: block;
+  box-shadow: 1px 5px 20px #1B94FB;
 }
 
 /*https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif*/

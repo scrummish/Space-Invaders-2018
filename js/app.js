@@ -41,8 +41,8 @@ let playerCoordinateX = 150;
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 let scoreCounter = 0; // Keeps track of the amount of enemyFleetArray you shot down
-let enemiesPassed = 30; // Amount of enemies allowed to pass before game over
-let damageTaken = 30; // Amount of damage allowed to take before game over
+let enemiesPassed = 15; // Amount of enemies allowed to pass before game over
+let lifePoints = 10; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let firedBossLaserArray = []; // Contains lasers fired by boss ship
@@ -51,7 +51,7 @@ let activateBoss = false;
 let stopGame;
 let clearMe;
 let lvl1;
-let bossLife = 2000;
+let bossLife = 1000;
 let $bossMusic;
 
 
@@ -69,6 +69,8 @@ let game = {
 	},
 	createContext: function(){ // Draws everything onto the canvas and checks if anything collided
   		$("#score").text(scoreCounter); // Updates players score
+  		$("#life-points").text(lifePoints); // Updates players life points
+  		$("#enemy-points").text(enemiesPassed); // Updates amount of enemies that have passed the player
 		this.createEnemy(); // Creates enemy fleets
 		this.createPlayer(); // Creates players ship
 		game.handleCollisions(); // Checks if anything worth checking has collided
@@ -157,7 +159,7 @@ let game = {
 	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
 	    	if (game.collides(enemy, player)) {
 	     		enemy.die(); // If the enemy ship being checked has collided with the player it calls this method on that ship
-		 		damageTaken--;  
+		 		lifePoints--;  
 	    	};
 	  	});
 	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
@@ -168,7 +170,7 @@ let game = {
 	  	firedBossLaserArray.forEach(function(laser){
 			if (game.collides(laser,player)){
 				firedBossLaserArray.splice(0,2);
-				damageTaken--;
+				lifePoints--;
 			};
 		});
 	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
@@ -179,12 +181,13 @@ let game = {
 	  	});
 	},
 	gameOver: function(){
-		$bossMusic.remove();
-		if(enemiesPassed <= 0 || damageTaken <= 0){
+		if(enemiesPassed <= -1 || lifePoints <= -1){
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
 			clearMe = true;
-		} 
+		} else {
+			$bossMusic.remove();
+		}	
 	},
 	playAudio: function(){
 		$song.attr({
@@ -199,6 +202,8 @@ let game = {
 		});
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
+		$(".life").css("display","block");
+		$(".enemy-invasion").css("display","block");
 		$(".modal").css("display","none");
 
 	},
