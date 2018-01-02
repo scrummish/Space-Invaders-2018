@@ -13,15 +13,15 @@
 // Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
 
-// Incomplete: Game Over on 10 ships crossing player
-// Incomplete: Game Over on 10 collisions with player ship
 // Incomplete: Create boss ship, boss ship should control players movement 
+// Incomplete: Refresh to restart notice
+// Incomplete: Fix players movement, make it more fluid
 
-// Backlog: Fix players movement, make it more fluid
 // Backlog: Add effect when ship collides with player
 // Backlog: Randomly add a cromulon head in the background "show me what you got"
 // Backlog: Add side fire to the players ship
 // Backlog: Add another level
+// Backlog: alert player for ships remaining and life
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
@@ -47,10 +47,12 @@ let enemiesPassed = 10; // Amount of enemies allowed to pass is 1 less than enem
 let damageTaken = 10; // Amount of damage allowed to take is 1 less than damageTaken or else game is over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
+let firedBossLaserArray = []; // Contains lasers fired by boss ship
 let enemySpeed = .5; // Variable to adjust every level for dificulty setting
 let activateBoss = false;
 let stopGame;
 let clearMe;
+let lvl1Boss;
 
 let game = {
 	startGame: function(){ // Starts the game
@@ -90,6 +92,13 @@ let game = {
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
     		enemy.draw();
   		});
+  		if(scoreCounter >= 130){
+  			lvl1.draw();
+  			let randomLaser = Math.floor(Math.random() * 100) + 1; 
+  			if(randomLaser == 5){
+  				lvl1.shoot();
+  			} 
+  		}
 	},
 	collides: function(a, b) { // Algorithm for checking if two squared objects collide
 	  	return a.x < b.x + b.width && // Returns true if all those conditions are met
@@ -105,53 +114,34 @@ let game = {
 			        scoreCounter++;
 			        if (scoreCounter === 130){
 			        	activateBoss = true;
+			        	lvl1 = new Boss();
 			        	if (activateBoss){
 							game.level1Boss.music();
 							activateBoss = false;
 						};
-			        } else if (scoreCounter >= 130){
+					} else if (scoreCounter >= 130){
 			        	enemySpeed = 1.3;
 			        	$background.css(
-			         		// -webkit-animation:25s scroll infinite linear reverse;
-  							// -moz-animation:25s scroll infinite linear reverse;
-  							// -o-animation:25s scroll infinite linear reverse;
-  							// -ms-animation:25s scroll infinite linear reverse;
   							"animation", "20s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 100){
 			        	enemySpeed = 1.3;
 			        	$background.css(
-			         		// -webkit-animation:25s scroll infinite linear reverse;
-  							// -moz-animation:25s scroll infinite linear reverse;
-  							// -o-animation:25s scroll infinite linear reverse;
-  							// -ms-animation:25s scroll infinite linear reverse;
   							"animation", "5s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 75){
 			        	enemySpeed = 1.1;
 			        	$background.css(
-			         		// -webkit-animation:25s scroll infinite linear reverse;
-  							// -moz-animation:25s scroll infinite linear reverse;
-  							// -o-animation:25s scroll infinite linear reverse;
-  							// -ms-animation:25s scroll infinite linear reverse;
   							"animation", "10s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 50){
 			        	enemySpeed = .9;
 			        	$background.css(
-			         		// -webkit-animation:25s scroll infinite linear reverse;
-  							// -moz-animation:25s scroll infinite linear reverse;
-  							// -o-animation:25s scroll infinite linear reverse;
-  							// -ms-animation:25s scroll infinite linear reverse;
   							"animation", "15s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 25){
 			        	enemySpeed = .7;
 			        	$background.css(
-			         		// -webkit-animation:25s scroll infinite linear reverse;
-  							// -moz-animation:25s scroll infinite linear reverse;
-  							// -o-animation:25s scroll infinite linear reverse;
-  							// -ms-animation:25s scroll infinite linear reverse;
   							"animation", "20s scroll infinite linear reverse"
 			        	);
 			        }
@@ -172,7 +162,7 @@ let game = {
 	  	});
 	},
 	gameOver: function(){
-		if(enemiesPassed <= 0){
+		if(enemiesPassed <= 0 || damageTaken <= 0){
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
 			clearMe = true;
@@ -269,6 +259,66 @@ class Enemy {
     	this.active = this.active && this.inBounds(); // Active property is only true if both remains inbound and another action hasnt changed the active property to false
   	}
 }
+let bossX = 80;
+class Boss {
+	constructor(){
+		this.x = bossX;
+		this.y = 0;
+		this.width = 150;
+		this.height = 50;
+		this.picture = new Image();
+		this.picture.src = "imgs/ship5.png";
+	}
+	bossBeam(){
+
+	}
+	draw() {
+    	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height); // Creates the enemies ship
+  	}
+  	shoot(){
+		var bullet = new BossLaser(bossX + 22); // Creates an instance of a laser
+		firedBossLaserArray.push(bullet); // Pushes laser into an array
+		bullet.drawFire(bullet); // Creates the laser
+
+		var bullet1 = new BossLaser(bossX + 113); // Creates an instance of a laser
+		firedBossLaserArray.push(bullet1); // Pushes laser into an array
+		bullet1.drawFire(bullet1); // Creates the laser
+	}
+}
+
+class BossLaser { // Prototype for laser shots, extend it from the players laser when u have time
+	constructor(laser){
+		this.x = laser; // Boss' X axis plus number neccessary to position in the right place
+		this.y = 20;
+		this.picture = new Image(); 
+		this.picture.src = "imgs/boss-shot.png";
+		this.width = 15;
+		this.height = 30;
+	}
+	drawLaser(){
+		$ctx.drawImage(this.picture, this.x, this.y, this.width, this.height);
+	}
+	drawFire(charge){	
+		var stopInt = setInterval(()=>{ // This makes the bullet travel 
+			charge.drawLaser(); // Redraws the laser shot with its updated y coordinate
+	  		this.y+=1;
+	  		// $("#canvas").css("box-shadow", "1px 5px 20px #AA56FF"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
+	  		if(this.y == -400){
+	  			// $("#canvas").css("box-shadow", "1px 5px 20px #1B94FB"); // Returns the canvas broders original color once the laser shot is out of the view
+	  			firedLaserArray.splice(0,1); // Removes the laser from the array
+	  			clearInterval(stopInt); // stops the laser from traveling
+	  		}
+	 	},3); // Change the speed the laser travels here
+	}
+	laserFx(){ // Adds a sound effect when player shoots a laser
+		let $laserSound = $("<audio></audio>").attr({
+	    	'src':'audio/laser.mp3',
+	    	'autoplay':'autoplay',
+		});
+		$laserSound[0].volume = 0.1;
+		$laserSound.appendTo("body");
+	}
+}
 
 class Laser { // Prototype for laser shots
 	constructor(id){
@@ -276,8 +326,6 @@ class Laser { // Prototype for laser shots
 		this.y = bulletY;
 		this.picture = new Image(); 
 		this.picture.src = "imgs/bulletpurple.png";
-		this.id = id;
-		this.active = true;
 		this.width = 5;
 		this.height = 15;
 	}
