@@ -51,7 +51,7 @@ let activateBoss = false;
 let stopGame;
 let clearMe;
 let lvl1;
-let bossLife = 1000;
+let bossLife = 1200;
 let $bossMusic;
 
 
