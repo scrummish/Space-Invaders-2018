@@ -12,7 +12,16 @@
 
 // Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
-// Randomly add a cromulon head in the background
+
+// Incomplete: Game Over on 10 ships crossing player
+// Incomplete: Game Over on 10 collisions with player ship
+// Incomplete: Create boss ship, boss ship should control players movement 
+
+// Backlog: Fix players movement, make it more fluid
+// Backlog: Add effect when ship collides with player
+// Backlog: Randomly add a cromulon head in the background "show me what you got"
+// Backlog: Add side fire to the players ship
+// Backlog: Add another level
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
@@ -40,13 +49,20 @@ let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let enemySpeed = .5; // Variable to adjust every level for dificulty setting
 let activateBoss = false;
+let stopGame;
+let clearMe;
 
 let game = {
 	startGame: function(){ // Starts the game
-		setInterval(()=>{ // Animates the game at 60 frames per second
+		stopGame = setInterval(()=>{ // Animates the game at 60 frames per second
 			$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
 			this.createContext(); // After canvas is cleared from the previous frame, it draws the next updated frame
-		},1000/framesPerSecond); 		
+			game.gameOver();
+			if (clearMe === true){
+				$ctx.clearRect(0, 0, canvas.width, canvas.height);
+				$(document).off("keydown");
+			}
+		},1000/framesPerSecond);		
 	},
 	createContext: function(){ // Draws everything onto the canvas and checks if anything collided
   		$("#score").text(scoreCounter); // Updates players score
@@ -151,9 +167,16 @@ let game = {
 	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
 	    	if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
 	      		enemy.die();
-	      		enemiesPassed++;
+	      		enemiesPassed--;
 	    	};
 	  	});
+	},
+	gameOver: function(){
+		if(enemiesPassed <= 0){
+			clearInterval(stopGame);
+			$("#game-over").css("display","block");
+			clearMe = true;
+		} 
 	},
 	playAudio: function(){
 		$song.attr({
@@ -169,6 +192,7 @@ let game = {
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
 		$(".modal").css("display","none");
+
 	},
 	enemyVictoryPoint: { // If an enemy ship collides with the enemyVictoryPoint object, it means they went passed the player and successfully invaded the planet your protecting
 		x: 0,

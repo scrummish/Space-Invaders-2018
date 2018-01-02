@@ -7,9 +7,16 @@ body{
 }
 .modal{
 	display: block;
-    position: absolute;
-    top: 260;
-    left: 143;
+  position: absolute;
+  top: 260;
+  left: 143;
+}
+#game-over{
+  display: none;
+  position: absolute;
+  top: 260;
+  left: 195;
+  color: red;
 }
 .scoreboard{
     height: 34px;
