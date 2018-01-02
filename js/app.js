@@ -19,7 +19,6 @@
 // Backlog: Randomly add a cromulon head in the background "show me what you got"
 // Backlog: Add side fire to the players ship
 // Backlog: Add another level
-// Backlog: alert player for ships remaining and life
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
@@ -185,9 +184,7 @@ let game = {
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
 			clearMe = true;
-		} else {
-			$bossMusic.remove();
-		}	
+		} 	
 	},
 	playAudio: function(){
 		$song.attr({
@@ -292,9 +289,6 @@ class Boss {
 		this.picture = new Image();
 		this.picture.src = "imgs/ship5.png";
 	}
-	bossBeam(){
-
-	}
 	draw() {
     	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height); // Creates the enemies ship
   	}
@@ -325,7 +319,7 @@ class BossLaser { // Prototype for laser shots, extend it from the players laser
 		var stopInt = setInterval(()=>{ // This makes the bullet travel 
 			charge.drawLaser(); // Redraws the laser shot with its updated y coordinate
 	  		this.y+=1;
-	  		// $("#canvas").css("box-shadow", "1px 5px 20px #AA56FF"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
+	  		// $("#canvas").css("box-shadow", "1px 5px 20px #00b8ff"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
 	  		if(this.y == -400){
 	  			// $("#canvas").css("box-shadow", "1px 5px 20px #1B94FB"); // Returns the canvas broders original color once the laser shot is out of the view
 	  			firedLaserArray.splice(0,1); // Removes the laser from the array
