@@ -12,6 +12,7 @@
 
 // Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
+// Incomplete: Load up all music on start up
 // Incomplete: Refresh to restart notice
 // Incomplete: Fix players movement, make it more fluid
 
@@ -161,11 +162,6 @@ let game = {
 		 		lifePoints--;  
 	    	};
 	  	});
-	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
-	    	if (game.collides(lvl1, currentShot)) {
-	     		bossLife--;
-	    	};
-	  	});
 	  	firedBossLaserArray.forEach(function(laser){
 			if (game.collides(laser,player)){
 				firedBossLaserArray.splice(0,2);
@@ -176,6 +172,11 @@ let game = {
 	    	if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
 	      		enemy.die();
 	      		enemiesPassed--;
+	    	};
+	  	});
+	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
+	    	if (game.collides(lvl1, currentShot)) {
+	     		bossLife--;
 	    	};
 	  	});
 	},
