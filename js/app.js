@@ -12,8 +12,6 @@
 
 // Objective: Survive the most rounds without letting a set amount of enemies pass you.
 
-
-// Incomplete: Create boss ship, boss ship should control players movement 
 // Incomplete: Refresh to restart notice
 // Incomplete: Fix players movement, make it more fluid
 
@@ -43,16 +41,19 @@ let playerCoordinateX = 150;
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 let scoreCounter = 0; // Keeps track of the amount of enemyFleetArray you shot down
-let enemiesPassed = 10; // Amount of enemies allowed to pass is 1 less than enemies passed or game over
-let damageTaken = 10; // Amount of damage allowed to take is 1 less than damageTaken or else game is over
+let enemiesPassed = 30; // Amount of enemies allowed to pass before game over
+let damageTaken = 30; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let firedBossLaserArray = []; // Contains lasers fired by boss ship
-let enemySpeed = .5; // Variable to adjust every level for dificulty setting
+let dificulty = .5; // Used to adjust the speed at which the enemies fly
 let activateBoss = false;
 let stopGame;
 let clearMe;
-let lvl1Boss;
+let lvl1;
+let bossLife = 2000;
+let $bossMusic;
+
 
 let game = {
 	startGame: function(){ // Starts the game
@@ -92,12 +93,17 @@ let game = {
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
     		enemy.draw();
   		});
-  		if(scoreCounter >= 130){
+
+  		// refactor this!
+  		if(scoreCounter >= 130 && bossLife >= 0){
   			lvl1.draw();
   			let randomLaser = Math.floor(Math.random() * 100) + 1; 
-  			if(randomLaser == 5){
+  			if(randomLaser == 5){ // Makes it so the boss doesnt shoot a countinous stream of lasers
   				lvl1.shoot();
   			} 
+  		}
+  		if (bossLife <= 0 && bossLife >= -30){
+  			$bossMusic.remove();
   		}
 	},
 	collides: function(a, b) { // Algorithm for checking if two squared objects collide
@@ -120,27 +126,27 @@ let game = {
 							activateBoss = false;
 						};
 					} else if (scoreCounter >= 130){
-			        	enemySpeed = 1.3;
+			        	dificulty = 1.3;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 100){
-			        	enemySpeed = 1.3;
+			        	dificulty = 1.3;
 			        	$background.css(
   							"animation", "5s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 75){
-			        	enemySpeed = 1.1;
+			        	dificulty = 1.1;
 			        	$background.css(
   							"animation", "10s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 50){
-			        	enemySpeed = .9;
+			        	dificulty = .9;
 			        	$background.css(
   							"animation", "15s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 25){
-			        	enemySpeed = .7;
+			        	dificulty = .7;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
 			        	);
@@ -154,6 +160,17 @@ let game = {
 		 		damageTaken--;  
 	    	};
 	  	});
+	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
+	    	if (game.collides(lvl1, currentShot)) {
+	     		bossLife--;
+	    	};
+	  	});
+	  	firedBossLaserArray.forEach(function(laser){
+			if (game.collides(laser,player)){
+				firedBossLaserArray.splice(0,2);
+				damageTaken--;
+			};
+		});
 	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
 	    	if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
 	      		enemy.die();
@@ -162,6 +179,7 @@ let game = {
 	  	});
 	},
 	gameOver: function(){
+		$bossMusic.remove();
 		if(enemiesPassed <= 0 || damageTaken <= 0){
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
@@ -192,12 +210,12 @@ let game = {
 	},
 	level1Boss: {
 		music: function(){
-			let $sound = $("<audio></audio>").attr({
+			$bossMusic = $("<audio></audio>").attr({
 	    	'src':'audio/boss.mp3',
 	    	'autoplay':'autoplay',
 			});
-			// $sound[0].volume = 0.5;
-			$sound.appendTo("body");
+			// $bossMusic[0].volume = 0.5;
+			$bossMusic.appendTo("body");
 		}
 	}
 }
@@ -241,7 +259,7 @@ class Enemy {
 	 	this.width = 30;
   		this.height = 20;
 		this.xVelocity = 0;
-		this.yVelocity = enemySpeed; // Tweak this for speed of falling ships
+		this.yVelocity = dificulty; // Tweak this for speed of falling ships
 	}
 	inBounds() { // returns true if enemy ship is within the height and width of the canvas
     	return this.x >= 0 && this.x <= 800 &&
