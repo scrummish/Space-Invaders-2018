@@ -55,15 +55,14 @@ let bossLife = 5000; // Life points for the level 1 boss
 let bossX = 80; // X axis for boss ship
 let shipSpeed = 1; // Boss ship speed
 
-
 // Objects:
 let game = {
 	startGame: function(){ // Starts the game
 		stopGame = setInterval(()=>{ // Animates the game at 60 frames per second
 			$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
 			this.createContext(); // After canvas is cleared from the previous frame, it draws the next updated frame
-			game.gameOver();
-			if (clearMe === true){
+			game.gameOver(); // Checks to see if game is over
+			if (clearMe === true){ // If game is over this executes
 				$ctx.clearRect(0, 0, canvas.width, canvas.height);
 				$(document).off("keydown");
 			}
@@ -79,10 +78,10 @@ let game = {
 	},
 	createPlayer: function(){ // Creates a new player ship
 		player = new Player(playerCoordinateX,130,20,12,"imgs/player.png"); // Instantiates a player object from the Player class
-		player.draw(); // Draws the chosen image to the canvas
+		player.draw(); // Draws the instantiated ship
 	},
 	createEnemy: function(){
-		var enemy = new Enemy(Math.floor(Math.random() * 270),0,40,8,"imgs/small-enemy.png"); // Instantiates an enemy object from the Enemy class
+		var enemy = new Enemy(Math.floor(Math.random() * 270),0,40,8,"imgs/small-enemy.png"); // Instantiates an enemy object from the Enemy class at a random x coordinate
   		enemyFleetArray.forEach(function(enemy) { // Iterates through the array containing all the created enemy ships and runs a method on each one
     		enemy.update(); // Updates each enemy ship to its new position for the current frame
   		});
@@ -95,7 +94,7 @@ let game = {
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
     		enemy.draw();
   		});
-  		game.level1Boss.activate();
+  		game.level1Boss.activate(); // Check to see if the boss should be activated
 	},
 	activateBoss: function(){
 			lvl1Boss = new Boss(bossX,0,150,35,"imgs/somers-boss.png");
@@ -179,13 +178,13 @@ let game = {
 		if(enemiesPassed <= -1 || lifePoints <= -1){
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
-			clearMe = true; 
+			clearMe = true; // Used to clear the canvas from any ships	
 		}	
 	},
 	winner: function(){
 		clearInterval(stopGame);
 		$("#winner").css("display","block");
-		clearMe = true; 		
+		clearMe = true; // Used to clear the canvas from any ships		
 	},
 	level1: function(){
 		$("h1").css("display","block");
@@ -219,11 +218,11 @@ let game = {
 	},
 	level1Boss: {
 		activate: function(){
-			if(scoreCounter >= 150 && bossLife >= 0){ 
+			if(scoreCounter >= 150 && bossLife >= 0){ // If Boss is alive(boss being alive is important, we dont want boss fire with no boss on screen) and 150 minion ships have been destroyed
   				game.activateBoss();
   				lvl1Boss.shoot();
   			}
-  			if (bossLife <= 0 && bossLife >= -30){
+  			if (bossLife <= 0 && bossLife >= -30){ // If Boss is defeated
   				game.winner();
   			}
 		}
@@ -231,7 +230,6 @@ let game = {
 }	  		
 
 // Classes: 
-
 class Ship {
 	constructor(x,y,width,height,image){
 		this.x = x;
@@ -266,6 +264,7 @@ class Enemy extends Ship{
     	this.active = this.active && this.inBounds(); // Active property is only true if both remains inbound and another action hasnt changed the active property to false
   	}
 }
+
 class Player extends Ship{
 	constructor(x,y,width,height,image){
 		super(x,y,width,height,image);
