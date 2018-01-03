@@ -8,6 +8,10 @@ worlds. It's up to you to stop them!
 
 Game is hosted on github at https://scrummish.github.io/Video-Game-Project-One/
 
+## Requirements
+
+The game is created with html Canvas which currently does not fuction on most handheld devices. 
+
 ## Built With
 
 * html - The skeleton of the game using html5 Canvas
