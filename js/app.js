@@ -24,10 +24,11 @@
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
-	$menuMusic[0].play(); 
+	$music[0].play(); 
 	$background.on("click",()=>{
-		$menuMusic[0].pause(); 
-		$level1Music[0].play();
+		$music.attr("src","audio/level1.mp3"); 
+		$music[0].load(); 
+		$music[0].play();
 		game.level1(); // Preps game for first level
 		game.startGame(); // Starts the game at its current level
 		$background.off("click"); // Removes the click listener on the element with the background class
@@ -37,9 +38,8 @@ $(document).ready(function() {
 // Global Variables
 let $background = $(".background");
 let $ctx = $("#canvas")[0].getContext("2d");
-let $level1Music = $("<audio>").attr({"src":"audio/level1.mp3", "preload":"auto"});
-let $menuMusic = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
-let $bossMusic = $("<audio>").attr({"src":"audio/boss.mp3", "preload":"auto"});
+let $music = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
+// let $bossMusic = $("<audio>").attr({"src":"audio/boss.mp3", "preload":"auto"});
 let player; // Represents the players ship instance
 let framesPerSecond = 60; // Timing at which animations will run
 let playerCoordinateX = 150; // x axis for player
@@ -119,8 +119,9 @@ let game = {
 			        enemy.die();
 			        scoreCounter++;
 			        if(scoreCounter === 130){
-			        	$level1Music[0].pause();
-			        	$bossMusic[0].play();
+			        	$music.attr("src","audio/boss.mp3"); 
+						$music[0].load(); 
+						$music[0].play();
 			        }
 			        if (scoreCounter >= 130){
 			        	dificulty = 1.1;
@@ -207,7 +208,6 @@ let game = {
   				lvl1Boss.shoot();
   			}
   			if (bossLife <= 0 && bossLife >= -30){
-  				$bossMusic.remove();
   				game.winner();
   			}
 		}
