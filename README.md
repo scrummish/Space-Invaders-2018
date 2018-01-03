@@ -21,7 +21,7 @@ This is version 1
 
 ## Authors
 
-* **Sergio Rocha** - *Initial work* - [Sergio Rocha](https://github.com/scrummish)
+* **Sergio Rocha** - [Sergio Rocha](https://github.com/scrummish)
 
 
 ## Acknowledgments
