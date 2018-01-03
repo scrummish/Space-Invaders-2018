@@ -41,7 +41,7 @@ let $ctx = $("#canvas")[0].getContext("2d");
 let $music = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
 // let $bossMusic = $("<audio>").attr({"src":"audio/boss.mp3", "preload":"auto"});
 let player; // Represents the players ship instance
-let framesPerSecond = 60; // Timing at which animations will run
+let framesPerSecond = 30; // Timing at which animations will run
 let playerCoordinateX = 150; // x axis for player
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
