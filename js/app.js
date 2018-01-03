@@ -41,13 +41,13 @@ let $ctx = $("#canvas")[0].getContext("2d");
 let $music = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
 // let $bossMusic = $("<audio>").attr({"src":"audio/boss.mp3", "preload":"auto"});
 let player; // Represents the players ship instance
-let framesPerSecond = 30; // Timing at which animations will run
+let framesPerSecond = 60; // Timing at which animations will run
 let playerCoordinateX = 150; // x axis for player
 let bulletY = 118; // y axis for bullet starting point
-let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 let scoreCounter = 0; // Keeps track of the amount of enemies you shot down
-let enemiesPassed = 30; // Amount of enemies allowed to pass before game over
-let lifePoints = 20; // Amount of damage allowed to take before game over
+let enemiesPassed = 5; // Amount of enemies allowed to pass before game over
+let lifePoints = 5; // Amount of damage allowed to take before game over
+let keyboardKeys = {}; // Object to hold the event listener keys pressed
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let firedBossLaserArray = []; // Contains lasers fired by boss ship
@@ -93,7 +93,7 @@ let game = {
   		enemyFleetArray = enemyFleetArray.filter(function(enemy) { // Filters the array containing all the created enemy ships
     		return enemy.active; // Retains any enemy ships where the active property equals true
   		});
-  		if(Math.random() < 0.015) { // This equation determines if the created ship will go into play
+  		if(Math.random() < 0.03) { // This equation determines if the created ship will go into play
    			enemyFleetArray.push(enemy); // If equation is true, the created enemy ship is put into play
   		};
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
@@ -104,13 +104,27 @@ let game = {
 	activateBoss: function(){
 			lvl1Boss = new Boss();
 			lvl1Boss.update();
-			lvl1Boss.draw();    	
+			lvl1Boss.draw();
+			game.handleBossCollisions();    	
 	},
 	collides: function(a, b) { // Algorithm for checking if two squared objects collide
 	  	return a.x < b.x + b.width && // Returns true if all those conditions are met
 	           a.x + a.width > b.x &&
 	           a.y < b.y + b.height &&
 	           a.y + a.height > b.y;
+	},
+	handleBossCollisions: function(){
+		firedLaserArray.forEach(function(currentShot) { // Iterates through lasers and check to see if they hit the boss
+	    	if (game.collides(lvl1Boss, currentShot)) {
+	     		bossLife--;
+	    	};
+	  	});
+	  	firedBossLaserArray.forEach(function(laser){
+			if (game.collides(laser,player)){
+				firedBossLaserArray.splice(0,2);
+				lifePoints--;
+			};
+		});
 	},
 	handleCollisions: function() {
 		firedLaserArray.forEach(function(bullet) { // Iterates through the fired lasers one by one
@@ -124,27 +138,27 @@ let game = {
 						$music[0].play();
 			        }
 			        if (scoreCounter >= 130){
-			        	dificulty = 1.1;
+			        	dificulty = 1.3;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 100){
-			        	dificulty = 1;
+			        	dificulty = 1.2;
 			        	$background.css(
   							"animation", "5s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 75){
-			        	dificulty = .9;
+			        	dificulty = 1.1;
 			        	$background.css(
   							"animation", "10s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 50){
-			        	dificulty = .8;
+			        	dificulty = 1;
 			        	$background.css(
   							"animation", "15s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 25){
-			        	dificulty = .7;
+			        	dificulty = .9;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
 			        	);
@@ -158,21 +172,10 @@ let game = {
 		 		lifePoints--;  
 	    	};
 	  	});
-	  	firedBossLaserArray.forEach(function(laser){
-			if (game.collides(laser,player)){
-				firedBossLaserArray.splice(0,2);
-				lifePoints--;
-			};
-		});
 	  	enemyFleetArray.forEach(function(enemy) { // Iterates through each enemy ship
 	    	if (game.collides(enemy, game.enemyVictoryPoint)) { // Checks if enemy ship being checked has collided with the coordinates that determine it has gone passed the player
 	      		enemy.die();
 	      		enemiesPassed--;
-	    	};
-	  	});
-	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
-	    	if (game.collides(lvl1Boss, currentShot)) {
-	     		bossLife--;
 	    	};
 	  	});
 	},
@@ -194,6 +197,23 @@ let game = {
 		$(".life").css("display","block");
 		$(".enemy-invasion").css("display","block");
 		$(".modal").css("display","none");
+	},
+	playerMovement: function(){
+		for (var direction in keyboardKeys){
+			if (direction == 39){
+				player.moveright();
+			} 
+			if (direction == 37){
+				player.moveleft();
+			} 
+		}
+	},
+	playerShooting: function(){
+		for (var direction in keyboardKeys){
+			if (direction == 32){
+				player.shoot();
+			}
+		}
 	},
 	enemyVictoryPoint: { // If an enemy ship collides with the enemyVictoryPoint object, it means they went passed the player and successfully invaded the planet your protecting
 		x: 0,
@@ -227,12 +247,12 @@ class Player {
 	}
 	moveright(){
 		if(playerCoordinateX <= 273){ 
-			playerCoordinateX += 13; // If condition is met, player moves on the x axis 
+			playerCoordinateX += 2; // If condition is met, player moves on the x axis 
 		} 	
 	}
 	moveleft(){
 		if(playerCoordinateX >= 4 ){
-			playerCoordinateX -= 13; // If condition is met, player moves on the x axis 
+			playerCoordinateX -= 2; // If condition is met, player moves on the x axis 
 		}
 	}
 	shoot(){
@@ -246,12 +266,12 @@ class Player {
 class Enemy { 
 	constructor(){
 		this.picture = new Image(); 
-  		this.picture.src = "imgs/ship5.png";
+  		this.picture.src = "imgs/small-enemy.png";
 		this.active = true;
 	 	this.x = Math.floor(Math.random() * 270); // Spawns ships at random locations on x coordinate
 	 	this.y = 0;
-	 	this.width = 30;
-  		this.height = 20;
+	 	this.width = 40;
+  		this.height = 8;
 		this.xVelocity = 0;
 		this.yVelocity = dificulty; // Tweak this for speed of falling ships
 	}
@@ -279,7 +299,7 @@ class Boss {
 		this.width = 150;
 		this.height = 50;
 		this.picture = new Image();
-		this.picture.src = "imgs/ship5.png";
+		this.picture.src = "imgs/somers-boss.png";
 	}
 	draw() {
     	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height); // Creates the enemies ship
@@ -376,25 +396,13 @@ class Laser { // Prototype for laser shots
 	}
 }
 
-$(document).keydown(function(e) {
-	if (e.which in keys) {
-		keys[e.which] = true;
-		if (keys[37] && keys[32]){
-			player.moveleft();
-			player.shoot();
-		} else if (keys[39] && keys[32]){
-			player.moveright();
-			player.shoot();
-		} else if (keys[39]){
-			player.moveright();
-		} else if (keys[37]){
-			player.moveleft();
-		} else if (keys[32]){
-			player.shoot();
-		}
-	}
-}).keyup(function(e) {
-    if (e.which in keys) {
-        keys[e.which] = false;
-    }
+setInterval(game.playerMovement,7);
+setInterval(game.playerShooting,100);
+
+$(document).keydown(function(e){
+	keyboardKeys[e.keyCode] = true; // Takes the code of the key used to trigger the keydown listener and adds it as a property of the keys array
 })
+
+$(document).keyup(function(e) {
+    delete keyboardKeys[e.keyCode]; // On keyup it deletes that key which was pressed from the array
+});
