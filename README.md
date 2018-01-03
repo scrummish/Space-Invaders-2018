@@ -10,7 +10,7 @@ Game is hosted on github at https://scrummish.github.io/Video-Game-Project-One/
 
 ## Requirements
 
-The game is created with html Canvas which currently does not fuction on most handheld devices. 
+Game is currently not optimized for mobile play. Check in for version 2 soon!
 
 ## Built With
 
