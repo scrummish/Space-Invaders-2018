@@ -35,25 +35,28 @@ $(document).ready(function() {
 let $background = $(".background");
 let $song = $("#start");
 let $ctx = $("#canvas")[0].getContext("2d");
+let $bossMusic;
+// let $level1Music = $("<audio>").attr('src':'audio/level1.mp3','muted':'muted','preload';'auto','id': 'start').append('body');
+// let $startMusic;
 let player;
 let framesPerSecond = 60;
 let playerCoordinateX = 150;
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
 let scoreCounter = 0; // Keeps track of the amount of enemyFleetArray you shot down
-let enemiesPassed = 15; // Amount of enemies allowed to pass before game over
-let lifePoints = 10; // Amount of damage allowed to take before game over
+let enemiesPassed = 30; // Amount of enemies allowed to pass before game over
+let lifePoints = 20; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let firedBossLaserArray = []; // Contains lasers fired by boss ship
 let dificulty = .5; // Used to adjust the speed at which the enemies fly
-let activateBoss = false;
+let actBoss = false;
 let stopGame;
 let clearMe;
 let lvl1;
-let bossLife = 1200;
-let $bossMusic;
-
+let bossLife = 4000;
+let bossX = 80; // X axis for boss ship
+let shipSpeed = 1; // Boss ship speed
 
 let game = {
 	startGame: function(){ // Starts the game
@@ -95,18 +98,12 @@ let game = {
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
     		enemy.draw();
   		});
-
-  		// refactor this!
-  		if(scoreCounter >= 130 && bossLife >= 0){
-  			lvl1.draw();
-  			let randomLaser = Math.floor(Math.random() * 100) + 1; 
-  			if(randomLaser == 5){ // Makes it so the boss doesnt shoot a countinous stream of lasers
-  				lvl1.shoot();
-  			} 
-  		}
-  		if (bossLife <= 0 && bossLife >= -30){
-  			$bossMusic.remove();
-  		}
+  		game.level1Boss.activate();
+	},
+	activateBoss: function(){
+			lvl1 = new Boss();
+			lvl1.update();
+			lvl1.draw();    	
 	},
 	collides: function(a, b) { // Algorithm for checking if two squared objects collide
 	  	return a.x < b.x + b.width && // Returns true if all those conditions are met
@@ -120,14 +117,10 @@ let game = {
 		      	if (game.collides(bullet, enemy)) { // Checks if any enemy ship has collided with the current laser 
 			        enemy.die();
 			        scoreCounter++;
-			        if (scoreCounter === 130){
-			        	activateBoss = true;
-			        	lvl1 = new Boss();
-			        	if (activateBoss){
-							game.level1Boss.music();
-							activateBoss = false;
-						};
-					} else if (scoreCounter >= 130){
+			        if(scoreCounter === 130){
+			        	game.level1Boss.music();
+			        }
+			        if (scoreCounter >= 130){
 			        	dificulty = 1.3;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
@@ -184,8 +177,8 @@ let game = {
 		if(enemiesPassed <= -1 || lifePoints <= -1){
 			clearInterval(stopGame);
 			$("#game-over").css("display","block");
-			clearMe = true;
-		} 	
+			clearMe = true; 
+		}	
 	},
 	playAudio: function(){
 		$song.attr({
@@ -195,6 +188,7 @@ let game = {
 		});
 	},
 	level1: function(){
+		// $level1Music.removeAttr('muted');
 		$song.attr({
 	    	'src':'audio/level1.mp3'
 		});
@@ -219,9 +213,18 @@ let game = {
 			});
 			// $bossMusic[0].volume = 0.5;
 			$bossMusic.appendTo("body");
+		},
+		activate: function(){
+			if(scoreCounter >= 130 && bossLife >= 0){ 
+  				game.activateBoss();
+  				lvl1.shoot();
+  			}
+  			if (bossLife <= 0 && bossLife >= -30){
+  				$bossMusic.remove();
+  			}
 		}
 	}
-}
+}	  		
 
 class Player {
 	constructor(){
@@ -280,7 +283,7 @@ class Enemy {
     	this.active = this.active && this.inBounds(); // Active property is only true if both remains inbound and another action hasnt changed the active property to false
   	}
 }
-let bossX = 80;
+
 class Boss {
 	constructor(){
 		this.x = bossX;
@@ -293,14 +296,27 @@ class Boss {
 	draw() {
     	$ctx.drawImage(this.picture, this.x, this.y , this.width, this.height); // Creates the enemies ship
   	}
-  	shoot(){
-		var bullet = new BossLaser(bossX + 22); // Creates an instance of a laser
-		firedBossLaserArray.push(bullet); // Pushes laser into an array
-		bullet.drawFire(bullet); // Creates the laser
+	shoot(){
+  		let randomLaser = Math.floor(Math.random() * 100) + 1; 
+  		if(randomLaser == 5){ // Makes it so the boss doesnt shoot a countinous stream of lasers
+  			var bullet = new BossLaser(bossX + 22); // Creates an instance of a laser
+			firedBossLaserArray.push(bullet); // Pushes laser into an array
+			bullet.drawFire(bullet); // Creates the laser
 
-		var bullet1 = new BossLaser(bossX + 113); // Creates an instance of a laser
-		firedBossLaserArray.push(bullet1); // Pushes laser into an array
-		bullet1.drawFire(bullet1); // Creates the laser
+			var bullet1 = new BossLaser(bossX + 113); // Creates an instance of a laser
+			firedBossLaserArray.push(bullet1); // Pushes laser into an array
+			bullet1.drawFire(bullet1); // Creates the laser
+  		};
+	}
+	update(){
+		bossX+=shipSpeed;
+		this.draw();
+		if (bossX < 0){ // This is the perimeter 
+		 	shipSpeed = -shipSpeed; // Makes it bounce off the left side
+		}
+		if((bossX + 645) > 800){ // This is the perimeter 
+		 	shipSpeed = -shipSpeed; // Makes it bounce off the right side
+		}this.draw();
 	}
 }
 
