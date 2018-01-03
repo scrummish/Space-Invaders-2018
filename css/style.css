@@ -18,6 +18,13 @@ body{
   left: 195;
   color: red;
 }
+#winner{
+  display: none;
+  position: absolute;
+  top: 250;
+  left: 65;
+  color: green;
+}
 .scoreboard{
   height: 34px;
   position: absolute;

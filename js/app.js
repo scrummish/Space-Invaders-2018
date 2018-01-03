@@ -20,12 +20,15 @@
 // Backlog: Randomly add a cromulon head in the background "show me what you got"
 // Backlog: Add side fire to the players ship
 // Backlog: Add another level
+// Backlog: remove laser streaks after winning
 
 // Waits for the entire DOM to be ready before it initializes the game
 $(document).ready(function() {
-	game.playAudio(); 
+	$menuMusic[0].play(); 
 	$background.on("click",()=>{
-		game.level1(); // Changes variables to current levels values
+		$menuMusic[0].pause(); 
+		$level1Music[0].play();
+		game.level1(); // Preps game for first level
 		game.startGame(); // Starts the game at its current level
 		$background.off("click"); // Removes the click listener on the element with the background class
 	});	
@@ -33,28 +36,26 @@ $(document).ready(function() {
 
 // Global Variables
 let $background = $(".background");
-let $song = $("#start");
 let $ctx = $("#canvas")[0].getContext("2d");
-let $bossMusic;
-// let $level1Music = $("<audio>").attr('src':'audio/level1.mp3','muted':'muted','preload';'auto','id': 'start').append('body');
-// let $startMusic;
-let player;
-let framesPerSecond = 60;
-let playerCoordinateX = 150;
+let $level1Music = $("<audio>").attr({"src":"audio/level1.mp3", "preload":"auto"});
+let $menuMusic = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
+let $bossMusic = $("<audio>").attr({"src":"audio/boss.mp3", "preload":"auto"});
+let player; // Represents the players ship instance
+let framesPerSecond = 60; // Timing at which animations will run
+let playerCoordinateX = 150; // x axis for player
 let bulletY = 118; // y axis for bullet starting point
 let keys = {37: false, 39: false, 32: false}; // The keys for the keyboard inputs
-let scoreCounter = 0; // Keeps track of the amount of enemyFleetArray you shot down
+let scoreCounter = 0; // Keeps track of the amount of enemies you shot down
 let enemiesPassed = 30; // Amount of enemies allowed to pass before game over
 let lifePoints = 20; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let firedLaserArray = []; // Contains fired lasers
 let firedBossLaserArray = []; // Contains lasers fired by boss ship
 let dificulty = .5; // Used to adjust the speed at which the enemies fly
-let actBoss = false;
-let stopGame;
-let clearMe;
-let lvl1;
-let bossLife = 4000;
+let stopGame; // Used to stop the game after winning or losing
+let clearMe; // Used to clear canvas after winning or losing
+let lvl1Boss; // Represents the 1st boss instance
+let bossLife = 4000; // Life points for the level 1 boss
 let bossX = 80; // X axis for boss ship
 let shipSpeed = 1; // Boss ship speed
 
@@ -68,7 +69,7 @@ let game = {
 				$ctx.clearRect(0, 0, canvas.width, canvas.height);
 				$(document).off("keydown");
 			}
-		},1000/framesPerSecond);		
+		},1000/framesPerSecond);	
 	},
 	createContext: function(){ // Draws everything onto the canvas and checks if anything collided
   		$("#score").text(scoreCounter); // Updates players score
@@ -92,7 +93,7 @@ let game = {
   		enemyFleetArray = enemyFleetArray.filter(function(enemy) { // Filters the array containing all the created enemy ships
     		return enemy.active; // Retains any enemy ships where the active property equals true
   		});
-  		if(Math.random() < 0.01) { // This equation determines if the created ship will go into play
+  		if(Math.random() < 0.015) { // This equation determines if the created ship will go into play
    			enemyFleetArray.push(enemy); // If equation is true, the created enemy ship is put into play
   		};
   		enemyFleetArray.forEach(function(enemy) { // Calls the draw method on each ship in play
@@ -101,9 +102,9 @@ let game = {
   		game.level1Boss.activate();
 	},
 	activateBoss: function(){
-			lvl1 = new Boss();
-			lvl1.update();
-			lvl1.draw();    	
+			lvl1Boss = new Boss();
+			lvl1Boss.update();
+			lvl1Boss.draw();    	
 	},
 	collides: function(a, b) { // Algorithm for checking if two squared objects collide
 	  	return a.x < b.x + b.width && // Returns true if all those conditions are met
@@ -118,25 +119,26 @@ let game = {
 			        enemy.die();
 			        scoreCounter++;
 			        if(scoreCounter === 130){
-			        	game.level1Boss.music();
+			        	$level1Music[0].pause();
+			        	$bossMusic[0].play();
 			        }
 			        if (scoreCounter >= 130){
-			        	dificulty = 1.3;
+			        	dificulty = 1.1;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 100){
-			        	dificulty = 1.3;
+			        	dificulty = 1;
 			        	$background.css(
   							"animation", "5s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 75){
-			        	dificulty = 1.1;
+			        	dificulty = .9;
 			        	$background.css(
   							"animation", "10s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 50){
-			        	dificulty = .9;
+			        	dificulty = .8;
 			        	$background.css(
   							"animation", "15s scroll infinite linear reverse"
 			        	);
@@ -168,7 +170,7 @@ let game = {
 	    	};
 	  	});
 	  	firedLaserArray.forEach(function(currentShot) { // Iterates through each enemy ship
-	    	if (game.collides(lvl1, currentShot)) {
+	    	if (game.collides(lvl1Boss, currentShot)) {
 	     		bossLife--;
 	    	};
 	  	});
@@ -180,24 +182,17 @@ let game = {
 			clearMe = true; 
 		}	
 	},
-	playAudio: function(){
-		$song.attr({
-	    	'src':'audio/start.mp3',
-	    	'autoplay':'autoplay',
-	    	'id': 'start'
-		});
+	winner: function(){
+		clearInterval(stopGame);
+		$("#winner").css("display","block");
+		clearMe = true; 		
 	},
 	level1: function(){
-		// $level1Music.removeAttr('muted');
-		$song.attr({
-	    	'src':'audio/level1.mp3'
-		});
 		$("h1").css("display","block");
 		$(".scoreboard").css("display","block");
 		$(".life").css("display","block");
 		$(".enemy-invasion").css("display","block");
 		$(".modal").css("display","none");
-
 	},
 	enemyVictoryPoint: { // If an enemy ship collides with the enemyVictoryPoint object, it means they went passed the player and successfully invaded the planet your protecting
 		x: 0,
@@ -206,21 +201,14 @@ let game = {
 		height: 2,
 	},
 	level1Boss: {
-		music: function(){
-			$bossMusic = $("<audio></audio>").attr({
-	    	'src':'audio/boss.mp3',
-	    	'autoplay':'autoplay',
-			});
-			// $bossMusic[0].volume = 0.5;
-			$bossMusic.appendTo("body");
-		},
 		activate: function(){
 			if(scoreCounter >= 130 && bossLife >= 0){ 
   				game.activateBoss();
-  				lvl1.shoot();
+  				lvl1Boss.shoot();
   			}
   			if (bossLife <= 0 && bossLife >= -30){
   				$bossMusic.remove();
+  				game.winner();
   			}
 		}
 	}
