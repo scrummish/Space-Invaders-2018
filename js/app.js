@@ -33,20 +33,20 @@ $(document).ready(function() {
 });
 
 // Global Variables
-let $background = $(".background");
-let $ctx = $("#canvas")[0].getContext("2d");
-let $music = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
+const $background = $(".background");
+const $ctx = $("#canvas")[0].getContext("2d");
+const $music = $("<audio>").attr({"src":"audio/start.mp3", "preload":"auto"});
+const keyboardKeys = {}; // Object to hold the event listener keys pressed
+const framesPerSecond = 60; // Timing at which animations will run
+const firedLaserArray = []; // Contains fired lasers
+const firedBossLaserArray = []; // Contains lasers fired by boss ship
 let player; // Represents the players ship instance
-let framesPerSecond = 60; // Timing at which animations will run
 let playerCoordinateX = 150; // x axis for player
 let bulletY = 118; // y axis for bullet starting point
 let scoreCounter = 0; // Keeps track of the amount of enemies you shot down
-let enemiesPassed = 5; // Amount of enemies allowed to pass before game over
-let lifePoints = 9; // Amount of damage allowed to take before game over
-let keyboardKeys = {}; // Object to hold the event listener keys pressed
+let enemiesPassed = 10; // Amount of enemies allowed to pass before game over
+let lifePoints = 10; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
-let firedLaserArray = []; // Contains fired lasers
-let firedBossLaserArray = []; // Contains lasers fired by boss ship
 let dificulty = .5; // Used to adjust the speed at which the enemies fly
 let stopGame; // Used to stop the game after winning or losing
 let clearMe; // Used to clear canvas after winning or losing
@@ -56,7 +56,7 @@ let bossX = 80; // X axis for boss ship
 let shipSpeed = 1; // Boss ship speed
 
 // Objects:
-let game = {
+const game = {
 	startGame: function(){ // Starts the game
 		stopGame = setInterval(()=>{ // Animates the game at 60 frames per second
 			$ctx.clearRect(0, 0, canvas.width, canvas.height); // clears the entire canvas before drawing a new frame
@@ -81,7 +81,7 @@ let game = {
 		player.draw(); // Draws the instantiated ship
 	},
 	createEnemy: function(){
-		var enemy = new Enemy(Math.floor(Math.random() * 270),0,40,8,"imgs/small-enemy.png"); // Instantiates an enemy object from the Enemy class at a random x coordinate
+		const enemy = new Enemy(Math.floor(Math.random() * 270),0,40,8,"imgs/small-enemy.png"); // Instantiates an enemy object from the Enemy class at a random x coordinate
   		enemyFleetArray.forEach(function(enemy) { // Iterates through the array containing all the created enemy ships and runs a method on each one
     		enemy.update(); // Updates each enemy ship to its new position for the current frame
   		});
@@ -97,7 +97,7 @@ let game = {
   		game.level1Boss.activate(); // Check to see if the boss should be activated
 	},
 	activateBoss: function(){
-			lvl1Boss = new Boss(bossX,0,150,35,"imgs/somers-boss.png");
+			lvl1Boss = new Boss(bossX,0,150,45,"imgs/somers-boss.png");
 			lvl1Boss.update();
 			lvl1Boss.draw();
 			game.handleBossCollisions();    	
@@ -127,12 +127,12 @@ let game = {
 		      	if (game.collides(bullet, enemy)) { // Checks if any enemy ship has collided with the current laser 
 			        enemy.die();
 			        scoreCounter++;
-			        if(scoreCounter === 150){
+			        if(scoreCounter === 125){
 			        	$music.attr("src","audio/boss.mp3"); 
 						$music[0].load(); 
 						$music[0].play();
 			        }
-			        if (scoreCounter >= 150){
+			        if (scoreCounter >= 125){
 			        	dificulty = 2;
 			        	$background.css(
   							"animation", "20s scroll infinite linear reverse"
@@ -194,7 +194,7 @@ let game = {
 		$(".modal").css("display","none");
 	},
 	playerMovement: function(){
-		for (var direction in keyboardKeys){
+		for (const direction in keyboardKeys){
 			if (direction == 39){
 				player.moveright();
 			} 
@@ -204,7 +204,7 @@ let game = {
 		}
 	},
 	playerShooting: function(){
-		for (var direction in keyboardKeys){
+		for (const direction in keyboardKeys){
 			if (direction == 32){
 				player.shoot();
 			}
@@ -218,7 +218,7 @@ let game = {
 	},
 	level1Boss: {
 		activate: function(){
-			if(scoreCounter >= 150 && bossLife >= 0){ // If Boss is alive(boss being alive is important, we dont want boss fire with no boss on screen) and 150 minion ships have been destroyed
+			if(scoreCounter >= 125 && bossLife >= 0){ // If Boss is alive(boss being alive is important, we dont want boss fire with no boss on screen) and 150 minion ships have been destroyed
   				game.activateBoss();
   				lvl1Boss.shoot();
   			}
@@ -230,6 +230,7 @@ let game = {
 }	  		
 
 // Classes: 
+
 class Ship {
 	constructor(x,y,width,height,image){
 		this.x = x;
@@ -281,7 +282,7 @@ class Player extends Ship{
 	}
 	shoot(){
 		if (clearMe !== true){ // This is to make sure the player cant continue to shoot after game ends
-			var bullet = new Laser(playerCoordinateX + 8, bulletY,"imgs/bulletpurple.png",5,15); // Creates an instance of a laser
+			const bullet = new Laser(playerCoordinateX + 8, bulletY,"imgs/bulletpurple.png",5,15); // Creates an instance of a laser
 			firedLaserArray.push(bullet); // Pushes laser into an array
 			bullet.laserFx(); // Adds a shooting sound effect
 			bullet.drawFire(bullet); // Creates the laser
@@ -297,11 +298,11 @@ class Boss extends Ship{
 		if (clearMe !== true){ // This is to make sure the boss cant continue to shoot after game ends
 	  		let randomLaser = Math.floor(Math.random() * 100) + 1; 
 	  		if(randomLaser == 5){ // Makes it so the boss doesnt shoot a countinous stream of lasers
-	  			var bullet = new BossLaser(bossX + 22,20,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
+	  			const bullet = new BossLaser(bossX + 22,20,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
 				firedBossLaserArray.push(bullet); // Pushes laser into an array
 				bullet.drawFire(bullet); // Creates the laser
 
-				var bullet1 = new BossLaser(bossX + 113,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
+				const bullet1 = new BossLaser(bossX + 113,20,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
 				firedBossLaserArray.push(bullet1); // Pushes laser into an array
 				bullet1.drawFire(bullet1); // Creates the laser
 	  		};
@@ -332,7 +333,7 @@ class Laser {
 		$ctx.drawImage(this.picture, this.x, this.y, this.width, this.height);
 	}
 	drawFire(charge){	
-		var stopInt = setInterval(()=>{ // This makes the bullet travel 
+		const stopInt = setInterval(()=>{ // This makes the bullet travel 
 			charge.drawLaser(); // Redraws the laser shot with its updated y coordinate
 	  		this.y-=1;
 	  		$("#canvas").css("box-shadow", "1px 5px 20px #AA56FF"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
@@ -358,7 +359,7 @@ class BossLaser extends Laser{ // Prototype for laser shots, extend it from the 
 		super(x,y,image,width,height)
 	}
 	drawFire(charge){	
-		var stopInt = setInterval(()=>{ // This makes the bullet travel 
+		const stopInt = setInterval(()=>{ // This makes the bullet travel 
 			charge.drawLaser(); // Redraws the laser shot with its updated y coordinate
 	  		this.y+=1;
 	  		// $("#canvas").css("box-shadow", "1px 5px 20px #00b8ff"); // changes the canvas borders color to match the color of the laser to emphasize the power of the laser shot
@@ -380,5 +381,3 @@ $(document).keydown(function(e){
 $(document).keyup(function(e) {
     delete keyboardKeys[e.keyCode]; // On keyup it deletes that key which was pressed from the array
 });
-
-$ctx.clearRect(0, 0, canvas.width, canvas.height);
