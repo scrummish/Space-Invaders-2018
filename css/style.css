@@ -100,9 +100,6 @@ canvas{
   box-shadow: 1px 5px 20px #1B94FB;
 }
 
-/*https://static.tumblr.com/a7a24e42e205f391e40d7d439332ce3f/3wg7a5d/f7Woohmiu/tumblr_static_tumblr_static__640.gif*/
-/*background-image: url("https://s-media-cache-ak0.pinimg.com/originals/49/bf/26/49bf261b558f1228ec3481da309cdb77.gif");*/
-/*https://www.w3schools.com/css/css3_animations.asp*/
 .background{
   position:fixed;
   background: url('../imgs/gif1.gif');
