@@ -45,7 +45,7 @@ let playerCoordinateX = 150; // x axis for player
 let bulletY = 118; // y axis for bullet starting point
 let scoreCounter = 0; // Keeps track of the amount of enemies you shot down
 let enemiesPassed = 10; // Amount of enemies allowed to pass before game over
-let lifePoints = 10; // Amount of damage allowed to take before game over
+let lifePoints = 15; // Amount of damage allowed to take before game over
 let enemyFleetArray = []; // Array containing spawned enemy ships
 let dificulty = .5; // Used to adjust the speed at which the enemies fly
 let stopGame; // Used to stop the game after winning or losing
@@ -54,6 +54,7 @@ let lvl1Boss; // Represents the 1st boss instance
 let bossLife = 5000; // Life points for the level 1 boss
 let bossX = 80; // X axis for boss ship
 let shipSpeed = 1; // Boss ship speed
+let fix; // Fixes the healthbar for the boss
 
 // Objects:
 const game = {
@@ -112,6 +113,7 @@ const game = {
 		firedLaserArray.forEach(function(currentShot) { // Iterates through lasers and check to see if they hit the boss
 	    	if (game.collides(lvl1Boss, currentShot)) {
 	     		bossLife--;
+	     		fix = 100 - (bossLife/100);
 	    	};
 	  	});
 	  	firedBossLaserArray.forEach(function(laser){
@@ -219,6 +221,14 @@ const game = {
 	level1Boss: {
 		activate: function(){
 			if(scoreCounter >= 125 && bossLife >= 0){ // If Boss is alive(boss being alive is important, we dont want boss fire with no boss on screen) and 150 minion ships have been destroyed
+				$ctx.beginPath();
+				$ctx.lineWidth = "1";
+				$ctx.strokeStyle = "#1B94FB";
+				$ctx.rect(6,4,10,51);
+				$ctx.stroke();
+
+				$ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+				$ctx.fillRect(7, -46 + fix,8,bossLife/100);
   				game.activateBoss();
   				lvl1Boss.shoot();
   			}
