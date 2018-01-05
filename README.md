@@ -4,6 +4,12 @@ A premature race of beings mysteriously came into possesion of highly advanced
 technologies. Now they travel the galaxy looking to conquer and control new 	  
 worlds. It's up to you to stop them! 
 
+## How To Play
+
+The player can move from left to right using directional pad and fire using the spacebar
+
+Objective: Defeat the level one invasion without letting a certain amount of enemies get passed you, protect your ship!
+
 ## Getting Started
 
 Game is hosted on github at https://scrummish.github.io/Video-Game-Project-One/
