@@ -310,10 +310,12 @@ class Boss extends Ship{
 	  		if(randomLaser == 5){ // Makes it so the boss doesnt shoot a countinous stream of lasers
 	  			const bullet = new BossLaser(bossX + 22,20,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
 				firedBossLaserArray.push(bullet); // Pushes laser into an array
+                bullet.laserFx();
 				bullet.drawFire(bullet); // Creates the laser
 
 				const bullet1 = new BossLaser(bossX + 113,20,"imgs/boss-shot.png",15,30); // Creates an instance of a laser
 				firedBossLaserArray.push(bullet1); // Pushes laser into an array
+                bullet.laserFx();
 				bullet1.drawFire(bullet1); // Creates the laser
 	  		};
   		}
@@ -379,6 +381,14 @@ class BossLaser extends Laser{ // Prototype for laser shots, extend it from the 
 	  			clearInterval(stopInt); // stops the laser from traveling
 	  		}
 	 	},3); // Change the speed the laser travels here
+	}
+    	laserFx(){ // Adds a sound effect when shooting a laser
+		let $laserSound = $("<audio></audio>").attr({
+	    	'src':'audio/boss-cannon.mp3',
+	    	'autoplay':'autoplay',
+		});
+		$laserSound[0].volume = 0.1;
+		$laserSound.appendTo("body");
 	}
 }
 
