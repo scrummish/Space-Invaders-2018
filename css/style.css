@@ -101,13 +101,12 @@ canvas{
 }
 
 .background{
-  position:fixed;
   background: url('../imgs/gif1.gif');
-  -webkit-animation:25s scroll infinite linear reverse;
-  -moz-animation:25s scroll infinite linear reverse;
-  -o-animation:25s scroll infinite linear reverse;
-  -ms-animation:25s scroll infinite linear reverse;
-  animation:25s scroll infinite linear reverse;
+  -webkit-animation:160s scroll infinite linear reverse;
+  -moz-animation:160s scroll infinite linear reverse;
+  -o-animation:160s scroll infinite linear reverse;
+  -ms-animation:160s scroll infinite linear reverse;
+  animation:160s scroll infinite linear reverse;
   margin: 0 auto;
   position: relative;
   height: 600px;
@@ -116,31 +115,31 @@ canvas{
 
 @-webkit-keyframes scroll{
   100%{
-    background-position:0px -3000px;
+    background-position:0px -30000px;
   }
 }
 
 @-moz-keyframes scroll{
   100%{
-    background-position:0px -3000px;
+    background-position:0px -30000px;
   }
 }
 
 @-o-keyframes scroll{
   100%{
-    background-position:0px -3000px;
+    background-position:0px -30000px;
   }
 }
 
 @-ms-keyframes scroll{
   100%{
-    background-position:0px -3000px;
+    background-position:0px -30000px;
   }
 }
 
 @keyframes scroll{
   100%{
-    background-position:0px -3000px;
+    background-position:0px -30000px;
   }
 }
 

@@ -22,7 +22,7 @@
 $(document).ready(function() {
 	$music[0].play(); 
 	$background.on("click",()=>{
-		$music.attr("src","audio/level1.mp3"); 
+		$music.attr("src","audio/level1.mp3"); // Changes the the mp3 to another track
 		$music[0].load(); 
 		$music[0].play();
 		game.level1(); // Preps game for first level
@@ -137,27 +137,27 @@ const game = {
 			        if (scoreCounter >= 125){
 			        	dificulty = 2;
 			        	$background.css(
-  							"animation", "20s scroll infinite linear reverse"
+  							"animation", "100s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 100){
 			        	dificulty = 2.2;
 			        	$background.css(
-  							"animation", "5s scroll infinite linear reverse"
+  							"animation", "50s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 75){
 			        	dificulty = 2;
 			        	$background.css(
-  							"animation", "10s scroll infinite linear reverse"
+  							"animation", "75s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 50){
 			        	dificulty = 1.5;
 			        	$background.css(
-  							"animation", "15s scroll infinite linear reverse"
+  							"animation", "95s scroll infinite linear reverse"
 			        	);
 			        } else if (scoreCounter >= 25){
 			        	dificulty = 1;
 			        	$background.css(
-  							"animation", "20s scroll infinite linear reverse"
+  							"animation", "120s scroll infinite linear reverse"
 			        	);
 			        }
 		      	};
