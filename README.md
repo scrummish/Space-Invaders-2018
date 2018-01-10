@@ -47,7 +47,9 @@ Game is currently not optimized for mobile play. Check in for version 2 soon!
 
 ## Wire Frames
 
-
+<img height="300" width="400" src="imgs/1.jpg"/>
+<img height="300" width="400" src="imgs/2.jpg"/>
+<img height="300" width="400" src="imgs/3.jpg"/>
 
 ## Versioning
 
