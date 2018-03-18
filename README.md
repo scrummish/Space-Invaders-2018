@@ -12,7 +12,7 @@ Objective: Defeat the level one invasion without letting a certain amount of ene
 
 ## Getting Started
 
-Game is hosted on github at https://scrummish.github.io/Video-Game-Project-One/
+Game is hosted on github at https://scrummish.github.io/Space-Invaders-2018/
 
 ## Requirements
 
