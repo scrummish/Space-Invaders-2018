@@ -57,7 +57,7 @@ This is version 1
 
 ## Authors
 
-* **Sergio Rocha** - [Sergio Rocha](https://www.sergio-rocha.com)
+* **Sergio Rocha** - [Sergio Rocha](http://www.sergio-rocha.com)
 
 
 ## Acknowledgments
