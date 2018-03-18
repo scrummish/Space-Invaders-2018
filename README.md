@@ -57,7 +57,7 @@ This is version 1
 
 ## Authors
 
-* **Sergio Rocha** - [Sergio Rocha](https://github.com/scrummish)
+* **Sergio Rocha** - [Sergio Rocha](https://www.sergio-rocha.com)
 
 
 ## Acknowledgments
