@@ -6,13 +6,13 @@ worlds. It's up to you to stop them!
 
 ## How To Play
 
-The player can move from left to right using directional pad and fire using the spacebar
+The player can move from left to right using the appropriate keys on the keyboard and fire using the spacebar
 
-Objective: Defeat the level one invasion without letting a certain amount of enemies get passed you, protect your ship!
+Objective: Defeat the level one invasion without letting a certain amount of enemies get passed you, or taking too much damage. Protect your ship!
 
 ## Getting Started
 
-Game is hosted on github at https://scrummish.github.io/Space-Invaders-2018/
+Game is available at https://scrummish.github.io/Space-Invaders-2018/
 
 ## Requirements
 
@@ -20,10 +20,10 @@ Game is currently not optimized for mobile play. Check in for version 2 soon!
 
 ## Built With
 
-* html - The skeleton of the game using html5 Canvas
-* javascript - Used to create all the functionality
+* HTML5 - The skeleton of the game using html Canvas
+* Javascript ES6 - Used to create all the functionality
 * jQuery - Assisted in creating the functionality
-* css - Used to style the game
+* CSS3 - Used to style the game
 
 ## User Stories
 
@@ -43,7 +43,7 @@ Game is currently not optimized for mobile play. Check in for version 2 soon!
 
 8. User should be able to face an unlimited amount of enemy ships as long as the games in play
 
-9. User should see enemy ships spawn at random places
+9. User should see enemy ships spawn at random places and times
 
 ## Wire Frames
 
@@ -53,7 +53,7 @@ Game is currently not optimized for mobile play. Check in for version 2 soon!
 
 ## Versioning
 
-This is version 1 
+This is version 1 which includes only the first level.
 
 ## Authors
 
